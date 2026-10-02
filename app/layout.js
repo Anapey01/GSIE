@@ -1,27 +1,5 @@
 import './globals.css';
 import GsapProvider from '@/components/animations/GsapProvider';
-import { Inter, Open_Sans, Montserrat } from 'next/font/google';
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const openSans = Open_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-open-sans',
-  display: 'swap',
-});
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['500', '600', '700', '800', '900'],
-  variable: '--font-montserrat',
-  display: 'swap',
-});
 
 export const metadata = {
   title: 'GhIE Student Chapter - University of Skills Training and Entrepreneurial Development',
@@ -30,7 +8,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${openSans.variable} ${montserrat.variable}`}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body suppressHydrationWarning className="antialiased bg-white text-slate-900 selection:bg-sky-500 selection:text-white font-sans">
         <GsapProvider>
           {children}

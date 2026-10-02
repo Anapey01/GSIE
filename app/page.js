@@ -1,19 +1,27 @@
 import Navbar from '@/components/Navbar';
-import HeroBanner from '@/components/HeroBanner';
-import AboutSection from '@/components/AboutSection';
 import Footer from '@/components/Footer';
+import Preloader from '@/components/Preloader';
+import CreativeHero from '@/components/CreativeHero';
+import CircuitTraceTransition from '@/components/CircuitTraceTransition';
+import EventsSection from '@/components/EventsSection';
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900">
+      {/* GridFolio-style Preloader customized for GhIE Platform */}
+      <Preloader />
+
       <Navbar />
       
       <main className="flex-grow">
-        {/* Geometric Hero Visual Showcase */}
-        <HeroBanner />
+        {/* Creative Engineering Student Hero */}
+        <CreativeHero />
 
-        {/* Official GhIE History & Institutional Narrative */}
-        <AboutSection />
+        {/* Animated Circuit/Data Trace Transition flowing into Events */}
+        <CircuitTraceTransition />
+
+        {/* Minimalist Responsive Calendar & Dynamic Events Section */}
+        <EventsSection />
       </main>
 
       <Footer />

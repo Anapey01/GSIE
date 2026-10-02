@@ -16,11 +16,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'var(--font-open-sans)', 'system-ui', 'sans-serif'],
-        heading: ['var(--font-montserrat)', 'sans-serif'],
-        montserrat: ['var(--font-montserrat)', 'sans-serif'],
-        open: ['var(--font-open-sans)', 'sans-serif'],
-        inter: ['var(--font-inter)', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        heading: ['"Space Grotesk"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
       },
     },
   },
