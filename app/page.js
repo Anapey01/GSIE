@@ -1,30 +1,49 @@
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+'use client';
+
+import React, { useState } from 'react';
+import Header from '@/components/figma/Header';
+import HeroSection from '@/components/figma/HeroSection';
+import ExecutivesSection from '@/components/figma/ExecutivesSection';
+import NewsSection from '@/components/figma/NewsSection';
+import EventsCalendarSection from '@/components/figma/EventsCalendarSection';
+import MembershipCTA from '@/components/figma/MembershipCTA';
+import FooterSection from '@/components/figma/FooterSection';
+import PortalModal from '@/components/PortalModal';
 import Preloader from '@/components/Preloader';
-import CreativeHero from '@/components/CreativeHero';
-import CircuitTraceTransition from '@/components/CircuitTraceTransition';
-import EventsSection from '@/components/EventsSection';
 
 export default function Home() {
+  const [isPortalOpen, setIsPortalOpen] = useState(false);
+
   return (
-    <div className="flex flex-col min-h-screen bg-white text-slate-900">
-      {/* GridFolio-style Preloader customized for GhIE Platform */}
+    <div className="flex flex-col min-h-screen bg-white text-slate-900 selection:bg-[#05b0f0] selection:text-[#001e5a]">
+      {/* Preloader for smooth initial experience */}
       <Preloader />
 
-      <Navbar />
-      
+      {/* 1. Header (Utility bar + Main navigation with preserved logo) */}
+      <Header onOpenPortal={() => setIsPortalOpen(true)} />
+
       <main className="flex-grow">
-        {/* Creative Engineering Student Hero */}
-        <CreativeHero />
+        {/* 2. Hero (Hero feature card + 3 Community pillars) */}
+        <HeroSection onOpenPortal={() => setIsPortalOpen(true)} />
 
-        {/* Animated Circuit/Data Trace Transition flowing into Events */}
-        <CircuitTraceTransition />
+        {/* 3. Student Executives (Section intro + 4 executive cards) */}
+        <ExecutivesSection />
 
-        {/* Minimalist Responsive Calendar & Dynamic Events Section */}
-        <EventsSection />
+        {/* 4. News and Stories (Section intro + 3 story cards) */}
+        <NewsSection />
+
+        {/* 5. Calendar and Upcoming Events (Intro + Month calendar + 3 upcoming events) */}
+        <EventsCalendarSection />
+
+        {/* 6. Membership Invitation (High-contrast blue invitation banner) */}
+        <MembershipCTA onOpenPortal={() => setIsPortalOpen(true)} />
       </main>
 
-      <Footer />
+      {/* 7. Footer (4-column info + legal bar + preserved logo) */}
+      <FooterSection />
+
+      {/* Portal & Membership Modal */}
+      <PortalModal isOpen={isPortalOpen} onClose={() => setIsPortalOpen(false)} />
     </div>
   );
 }
