@@ -9,28 +9,34 @@ export default function Header({ onOpenPortal }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="w-full flex flex-col z-50 sticky top-0 bg-white shadow-sm">
-      {/* 1. Utility bar (1440 x 36px, bg: #001e5a) */}
-      <div className="w-full bg-[#001e5a] text-white">
-        <div className="max-w-[1440px] mx-auto h-9 px-4 sm:px-8 lg:px-20 flex items-center justify-between text-xs font-normal">
-          {/* Community message */}
-          <div className="text-white truncate">
-            A community of thinkers, makers &amp; tomorrow’s engineers.
+    <header className="w-full flex flex-col z-50 sticky top-0 shadow-md">
+      {/* 1. Slim Utility Announcement Bar (Solid Deep Navy) */}
+      <div className="w-full bg-[#001640] text-white border-b border-white/10">
+        <div className="max-w-[1440px] mx-auto h-9 px-4 sm:px-8 lg:px-12 flex items-center justify-between text-[13px] sm:text-[14px]">
+          {/* Chapter Notice with live dot */}
+          <div className="flex items-center gap-2.5 text-[#c6d5ed] font-medium truncate">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#05b0f0] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#05b0f0]" />
+            </span>
+            <span>GhIE Student Chapter · A community of thinkers, makers &amp; tomorrow’s engineers.</span>
           </div>
 
-          {/* Utility links */}
-          <div className="hidden sm:flex items-center gap-6 text-xs">
+          {/* Quick External Links */}
+          <div className="hidden sm:flex items-center gap-6 text-[#c6d5ed]">
             <a
               href="https://ghie.org.gh"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#c6d5ed] hover:text-white transition-colors flex items-center gap-1"
+              className="hover:text-white transition-colors flex items-center gap-1 font-medium"
             >
-              Explore GhIE <span className="text-sm">↗</span>
+              <span>Explore GhIE</span>
+              <span className="text-[12px] text-[#05b0f0]">↗</span>
             </a>
+            <span className="text-white/20">|</span>
             <a
               href="#contact"
-              className="text-white hover:text-[#05b0f0] transition-colors"
+              className="hover:text-[#05b0f0] transition-colors font-medium"
             >
               Get in touch
             </a>
@@ -38,163 +44,154 @@ export default function Header({ onOpenPortal }) {
         </div>
       </div>
 
-      {/* 2. Main navigation (1440 x 100px, bg: #ffffff) */}
-      <div className="w-full bg-white border-b border-slate-100">
-        <div className="max-w-[1440px] mx-auto h-[90px] sm:h-[100px] px-4 sm:px-8 lg:px-20 flex items-center justify-between">
-          {/* Association identity with existing logo */}
-          <Link href="/" className="flex items-center gap-3.5 group">
-            {/* Preserving user's original logo as strictly requested */}
-            <div className="relative w-12 h-12 flex-shrink-0 flex items-center justify-center">
+      {/* 2. Main Navigation Bar (100% Solid Crisp White — ZERO Transparency / Glassmorphism) */}
+      <div className="w-full bg-white border-b border-slate-200">
+        <div className="max-w-[1440px] mx-auto h-[78px] sm:h-[82px] px-4 sm:px-8 lg:px-12 flex items-center justify-between">
+          
+          {/* Left: Brand Identity */}
+          <Link href="/" className="flex items-center gap-3.5 sm:gap-4 shrink-0 group">
+            <div className="relative w-11 h-11 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center p-1 rounded-xl bg-slate-50 border border-slate-200 group-hover:border-[#05b0f0]/60 transition-colors shadow-xs">
               <Image
                 src="/images/ghie-association-logo.png"
-                alt="Engineering Students' Association Logo"
+                alt="Engineering Students’ Association Logo"
                 width={48}
                 height={48}
-                className="object-contain w-full h-full"
+                className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300"
                 priority
               />
             </div>
+            
             <div className="flex flex-col">
-              <span className="font-heading font-bold text-[15px] sm:text-[16px] text-[#001e5a] tracking-tight leading-tight group-hover:text-[#05b0f0] transition-colors">
+              <span className="font-heading font-extrabold text-[18px] sm:text-[20px] text-[#001e5a] tracking-tight whitespace-nowrap leading-tight group-hover:text-[#05b0f0] transition-colors">
                 Engineering Students’ Association
               </span>
-              <span className="font-sans font-semibold text-[11px] sm:text-[12px] text-[#617086] tracking-wider uppercase">
-                STUDENT CHAPTER
+              <span className="font-mono text-[11px] sm:text-[12px] font-bold text-[#617086] tracking-wider uppercase whitespace-nowrap">
+                GhIE Student Chapter · AAMUSTED
               </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation Links & Action */}
-          <div className="hidden lg:flex items-center gap-7">
-            {/* Home (active) */}
-            <div className="flex flex-col items-center">
+          {/* Right: Desktop Navigation Links & Action CTA */}
+          <div className="hidden lg:flex items-center gap-7 xl:gap-8">
+            <nav aria-label="Main Navigation" className="flex items-center gap-1 xl:gap-2">
               <Link
                 href="/"
-                className="font-sans font-bold text-[15px] text-[#001e5a] pb-1 hover:text-[#05b0f0] transition-colors"
+                className="relative px-4 py-2 text-[16px] font-bold text-[#001e5a] hover:text-[#05b0f0] transition-colors whitespace-nowrap flex items-center group"
               >
-                Home
+                <span>Home</span>
+                <span className="absolute bottom-0 left-4 right-4 h-[2.5px] bg-[#05b0f0] rounded-full" />
               </Link>
-              <div className="w-[22px] h-[2px] bg-[#05b0f0] rounded-full" />
-            </div>
 
-            <Link
-              href="#about"
-              className="font-sans font-medium text-[15px] text-[#001e5a] hover:text-[#05b0f0] transition-colors"
-            >
-              About us
-            </Link>
+              <Link
+                href="#about"
+                className="px-4 py-2 text-[16px] font-semibold text-[#475569] hover:text-[#001e5a] hover:bg-slate-50 rounded-lg transition-colors whitespace-nowrap"
+              >
+                About us
+              </Link>
 
-            <Link
-              href="#executives"
-              className="font-sans font-medium text-[15px] text-[#001e5a] hover:text-[#05b0f0] transition-colors"
-            >
-              Executives
-            </Link>
+              <Link
+                href="#executives"
+                className="px-4 py-2 text-[16px] font-semibold text-[#475569] hover:text-[#001e5a] hover:bg-slate-50 rounded-lg transition-colors whitespace-nowrap"
+              >
+                Executives
+              </Link>
 
-            <Link
-              href="#news"
-              className="font-sans font-medium text-[15px] text-[#001e5a] hover:text-[#05b0f0] transition-colors"
-            >
-              News
-            </Link>
+              <Link
+                href="#news"
+                className="px-4 py-2 text-[16px] font-semibold text-[#475569] hover:text-[#001e5a] hover:bg-slate-50 rounded-lg transition-colors whitespace-nowrap"
+              >
+                News &amp; Stories
+              </Link>
 
-            <Link
-              href="#events"
-              className="font-sans font-medium text-[15px] text-[#001e5a] hover:text-[#05b0f0] transition-colors"
-            >
-              Events
-            </Link>
+              <Link
+                href="#events"
+                className="px-4 py-2 text-[16px] font-semibold text-[#475569] hover:text-[#001e5a] hover:bg-slate-50 rounded-lg transition-colors whitespace-nowrap"
+              >
+                Events
+              </Link>
+            </nav>
 
             {/* Action CTA Button */}
             <button
+              type="button"
               onClick={() => onOpenPortal ? onOpenPortal() : null}
-              className="inline-flex items-center justify-center gap-3 bg-[#05b0f0] hover:bg-[#049ad3] text-[#001e5a] font-sans font-bold text-[16px] px-5 py-3 rounded-[4px] transition-all transform active:scale-95 shadow-sm cursor-pointer"
+              className="group inline-flex items-center justify-center gap-2.5 bg-[#05b0f0] hover:bg-[#049ad3] text-[#001e5a] font-sans font-bold text-[16px] px-6 py-3 rounded-full shadow-md active:scale-95 transition-all cursor-pointer whitespace-nowrap shrink-0"
             >
               <span>Become a member</span>
-              <ArrowUpRight className="w-5 h-5 text-[#001e5a]" strokeWidth={2.2} />
+              <ArrowUpRight className="w-4 h-4 text-[#001e5a] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" strokeWidth={2.4} />
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Actions */}
           <div className="flex lg:hidden items-center gap-3">
             <button
               onClick={() => onOpenPortal ? onOpenPortal() : null}
-              className="inline-flex items-center justify-center gap-1.5 bg-[#05b0f0] text-[#001e5a] font-sans font-bold text-xs px-3 py-2 rounded-[4px]"
+              className="inline-flex items-center justify-center gap-1.5 bg-[#05b0f0] text-[#001e5a] font-sans font-bold text-sm px-4 py-2 rounded-full shadow-xs active:scale-95 transition-transform"
             >
               <span>Join</span>
-              <ArrowUpRight className="w-4 h-4 text-[#001e5a]" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-[#001e5a]" strokeWidth={2.4} />
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-[#001e5a] hover:text-[#05b0f0] transition-colors"
+              className="p-2 rounded-lg text-[#001e5a] hover:bg-slate-100 transition-colors"
               aria-label="Toggle Navigation Menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* 3. Mobile Menu Drawer (Solid White) */}
       {mobileMenuOpen && (
-        <div className="lg:hidden w-full bg-white border-b border-slate-200 px-6 py-5 flex flex-col gap-4 shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="lg:hidden w-full bg-white border-b border-slate-200 px-6 py-6 flex flex-col gap-4 shadow-xl animate-in fade-in slide-in-from-top-3 duration-200">
           <Link
             href="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="font-sans font-bold text-[16px] text-[#001e5a] flex items-center justify-between"
+            className="font-sans font-bold text-[18px] text-[#001e5a] flex items-center justify-between py-2.5 border-b border-slate-100"
           >
             <span>Home</span>
-            <div className="w-2 h-2 rounded-full bg-[#05b0f0]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#05b0f0]" />
           </Link>
           <Link
             href="#about"
             onClick={() => setMobileMenuOpen(false)}
-            className="font-sans font-medium text-[16px] text-[#001e5a] hover:text-[#05b0f0]"
+            className="font-sans font-semibold text-[17px] text-[#475569] hover:text-[#001e5a] py-2.5 border-b border-slate-100"
           >
             About us
           </Link>
           <Link
             href="#executives"
             onClick={() => setMobileMenuOpen(false)}
-            className="font-sans font-medium text-[16px] text-[#001e5a] hover:text-[#05b0f0]"
+            className="font-sans font-semibold text-[17px] text-[#475569] hover:text-[#001e5a] py-2.5 border-b border-slate-100"
           >
             Executives
           </Link>
           <Link
             href="#news"
             onClick={() => setMobileMenuOpen(false)}
-            className="font-sans font-medium text-[16px] text-[#001e5a] hover:text-[#05b0f0]"
+            className="font-sans font-semibold text-[17px] text-[#475569] hover:text-[#001e5a] py-2.5 border-b border-slate-100"
           >
-            News
+            News &amp; Stories
           </Link>
           <Link
             href="#events"
             onClick={() => setMobileMenuOpen(false)}
-            className="font-sans font-medium text-[16px] text-[#001e5a] hover:text-[#05b0f0]"
+            className="font-sans font-semibold text-[17px] text-[#475569] hover:text-[#001e5a] py-2.5 border-b border-slate-100"
           >
             Events
           </Link>
-          <div className="pt-2 border-t border-slate-100 flex flex-col gap-3">
-            <a
-              href="https://ghie.org.gh"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-[#617086] flex items-center justify-between"
-            >
-              <span>Explore GhIE Parent Body</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </a>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                if (onOpenPortal) onOpenPortal();
-              }}
-              className="w-full flex items-center justify-center gap-2 bg-[#05b0f0] text-[#001e5a] font-sans font-bold text-[15px] py-3 rounded-[4px]"
-            >
-              <span>Become a member</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
+
+          <button
+            onClick={() => {
+              setMobileMenuOpen(false);
+              if (onOpenPortal) onOpenPortal();
+            }}
+            className="w-full mt-3 inline-flex items-center justify-center gap-2 bg-[#05b0f0] text-[#001e5a] font-sans font-bold text-[16px] py-3.5 rounded-full shadow-md"
+          >
+            <span>Become a member</span>
+            <ArrowUpRight className="w-4 h-4 text-[#001e5a]" strokeWidth={2.4} />
+          </button>
         </div>
       )}
     </header>

@@ -10,6 +10,7 @@ import MembershipCTA from '@/components/figma/MembershipCTA';
 import FooterSection from '@/components/figma/FooterSection';
 import PortalModal from '@/components/PortalModal';
 import Preloader from '@/components/Preloader';
+import RevealObserver from '@/components/RevealObserver';
 
 export default function Home() {
   const [isPortalOpen, setIsPortalOpen] = useState(false);
@@ -17,6 +18,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 selection:bg-[#05b0f0] selection:text-[#001e5a]">
       {/* Preloader for smooth initial experience */}
+      <RevealObserver />
       <Preloader />
 
       {/* 1. Header (Utility bar + Main navigation with preserved logo) */}

@@ -13,10 +13,10 @@ export default function HeroSection({ onOpenPortal }) {
         <div className="max-w-[1440px] mx-auto min-h-[580px] lg:h-[610px] grid grid-cols-1 lg:grid-cols-12 items-stretch">
           
           {/* Left Column: Hero Introduction (w: 660px in 1440px container) */}
-          <div className="lg:col-span-6 xl:col-span-6 px-6 sm:px-12 lg:pl-20 lg:pr-10 py-12 lg:py-16 flex flex-col justify-center">
+          <div data-stagger className="lg:col-span-6 xl:col-span-6 px-6 sm:px-12 lg:pl-20 lg:pr-10 py-12 lg:py-16 flex flex-col justify-center">
             
             {/* Chapter overline */}
-            <div className="flex items-center gap-2.5 mb-6">
+            <div data-enter className="flex items-center gap-2.5 mb-6">
               <div className="w-[26px] h-[3px] bg-[#05b0f0] rounded-full" />
               <span className="font-sans font-bold text-[12px] text-[#c6d5ed] tracking-[0.08em] uppercase">
                 YOUR IDEAS. OUR SHARED FUTURE.
@@ -24,19 +24,19 @@ export default function HeroSection({ onOpenPortal }) {
             </div>
 
             {/* Hero heading */}
-            <h1 className="font-heading font-semibold text-4xl sm:text-5xl lg:text-[58px] leading-[1.08] text-white tracking-tight mb-5">
+            <h1 data-enter className="font-heading font-semibold text-4xl sm:text-5xl lg:text-[58px] leading-[1.08] text-white tracking-tight mb-5">
               Great engineers<br />
               start with<br />
               connection.
             </h1>
 
             {/* Hero description */}
-            <p className="font-sans font-normal text-base sm:text-lg lg:text-[19px] text-[#c6d5ed] leading-relaxed max-w-[480px] mb-8">
+            <p data-enter className="font-sans font-normal text-base sm:text-lg lg:text-[19px] text-[#c6d5ed] leading-relaxed max-w-[480px] mb-8">
               Find your people. Build your skills. Turn bold ideas into real impact with a student engineering community in Ghana.
             </p>
 
             {/* Hero actions */}
-            <div className="flex flex-wrap items-center gap-3.5 mb-6">
+            <div data-enter className="flex flex-wrap items-center gap-3.5 mb-6">
               <button
                 type="button"
                 onClick={() => onOpenPortal ? onOpenPortal() : null}
@@ -56,13 +56,13 @@ export default function HeroSection({ onOpenPortal }) {
             </div>
 
             {/* Membership welcome footnote */}
-            <p className="font-sans text-[13px] text-[#c6d5ed]">
+            <p data-enter className="font-sans text-[13px] text-[#c6d5ed]">
               All engineering disciplines. Every year of study.
             </p>
           </div>
 
           {/* Right Column: Student Engineering Feature (w: 780px in 1440px container) */}
-          <div className="lg:col-span-6 xl:col-span-6 relative p-4 sm:p-6 lg:p-8 flex items-center justify-center">
+          <div data-enter className="lg:col-span-6 xl:col-span-6 relative p-4 sm:p-6 lg:p-8 flex items-center justify-center [--motion-delay:240ms]">
             <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[546px] rounded-md overflow-hidden shadow-2xl">
               <Image
                 src="/images/figma/students_collaborating_in_workshop_841f0cec.jpg"
@@ -99,10 +99,10 @@ export default function HeroSection({ onOpenPortal }) {
       {/* 2. Community Pillars (1440 x 104px, bg: #f7f8f9) */}
       <div className="w-full bg-[#f7f8f9] border-b border-slate-200">
         <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 py-7">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12">
+          <div data-stagger className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12">
             
             {/* Pillar 1 */}
-            <div className="flex items-center gap-4 group">
+            <div data-reveal className="flex items-center gap-4 group amtrav-card-hover p-3 rounded-xl transition-all">
               <div className="w-11 h-11 rounded-full bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 text-[#001e5a] group-hover:bg-[#001e5a] group-hover:text-white transition-colors shadow-xs">
                 <Users className="w-6 h-6" strokeWidth={2} />
               </div>
@@ -117,7 +117,7 @@ export default function HeroSection({ onOpenPortal }) {
             </div>
 
             {/* Pillar 2 */}
-            <div className="flex items-center gap-4 group">
+            <div data-reveal className="flex items-center gap-4 group amtrav-card-hover p-3 rounded-xl transition-all">
               <div className="w-11 h-11 rounded-full bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 text-[#001e5a] group-hover:bg-[#001e5a] group-hover:text-white transition-colors shadow-xs">
                 <Wrench className="w-6 h-6" strokeWidth={2} />
               </div>
@@ -132,7 +132,7 @@ export default function HeroSection({ onOpenPortal }) {
             </div>
 
             {/* Pillar 3 */}
-            <div className="flex items-center gap-4 group">
+            <div data-reveal className="flex items-center gap-4 group amtrav-card-hover p-3 rounded-xl transition-all">
               <div className="w-11 h-11 rounded-full bg-white border border-slate-200 flex items-center justify-center flex-shrink-0 text-[#001e5a] group-hover:bg-[#001e5a] group-hover:text-white transition-colors shadow-xs">
                 <Lightbulb className="w-6 h-6" strokeWidth={2} />
               </div>

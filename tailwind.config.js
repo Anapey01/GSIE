@@ -26,9 +26,9 @@ module.exports = {
         borderMuted: '#b6beca',
       },
       fontFamily: {
-        sans: ['"Albert Sans"', 'Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
-        sora: ['Sora', 'sans-serif'],
-        heading: ['Sora', '"Space Grotesk"', 'sans-serif'],
+        sans: ['var(--font-geist-sans)', 'Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', 'monospace'],
+        heading: ['var(--font-geist-sans)', 'Inter', 'sans-serif'],
       },
     },
   },
