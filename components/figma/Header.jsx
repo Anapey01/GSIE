@@ -49,36 +49,36 @@ export default function Header({ onOpenPortal }) {
         <div className="max-w-[1440px] mx-auto h-[78px] sm:h-[82px] px-4 sm:px-8 lg:px-12 flex items-center justify-between">
           
           {/* Left: Brand Identity */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 shrink min-w-0 group">
-            {/* Dual Institutional Logo Lockup from initial commits */}
+          <Link href="/" className="flex items-center gap-2 sm:gap-3.5 shrink min-w-0 group">
+            {/* Dual Institutional Logos */}
             <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 py-1">
-              <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 flex items-center justify-center p-0.5 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200 group-hover:border-[#05b0f0]/60 transition-colors shadow-xs">
+              <div className="h-8 sm:h-10 w-auto flex items-center justify-center">
                 <Image
                   src="/images/ghie-association-logo.png"
                   alt="Ghana Institution of Engineering (GhIE)"
-                  width={40}
-                  height={40}
-                  className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300"
+                  width={110}
+                  height={36}
+                  className="h-7 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
                   priority
                 />
               </div>
 
-              <div className="h-5 sm:h-6 w-[1.5px] bg-slate-200 hidden xs:block" />
+              <div className="h-5 sm:h-7 w-[1.5px] bg-slate-200" />
 
-              <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 hidden xs:flex items-center justify-center p-0.5 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200 group-hover:border-[#05b0f0]/60 transition-colors shadow-xs">
+              <div className="h-8 sm:h-10 w-auto flex items-center justify-center">
                 <Image
                   src="/images/school-logo.png"
                   alt="AAMUSTED University"
-                  width={40}
-                  height={40}
-                  className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300"
+                  width={130}
+                  height={36}
+                  className="h-7 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
                   priority
                 />
               </div>
             </div>
             
-            <div className="flex flex-col min-w-0">
-              <span className="font-heading font-extrabold text-[14px] xs:text-[15px] sm:text-[18px] lg:text-[20px] text-[#001e5a] tracking-tight truncate leading-tight group-hover:text-[#05b0f0] transition-colors">
+            <div className="flex flex-col min-w-0 border-l border-slate-200 pl-2.5 sm:pl-3">
+              <span className="font-heading font-extrabold text-[13px] xs:text-[14px] sm:text-[17px] lg:text-[19px] text-[#001e5a] tracking-tight truncate leading-tight group-hover:text-[#05b0f0] transition-colors">
                 Engineering Students’ Association
               </span>
               <span className="font-mono text-[9px] xs:text-[10px] sm:text-[11px] lg:text-[12px] font-bold text-[#617086] tracking-wider uppercase truncate">
