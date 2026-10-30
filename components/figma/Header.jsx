@@ -49,30 +49,46 @@ export default function Header({ onOpenPortal }) {
         <div className="max-w-[1440px] mx-auto h-[78px] sm:h-[82px] px-4 sm:px-8 lg:px-12 flex items-center justify-between">
           
           {/* Left: Brand Identity */}
-          <Link href="/" className="flex items-center gap-3.5 sm:gap-4 shrink-0 group">
-            <div className="relative w-11 h-11 sm:w-12 sm:h-12 flex-shrink-0 flex items-center justify-center p-1 rounded-xl bg-slate-50 border border-slate-200 group-hover:border-[#05b0f0]/60 transition-colors shadow-xs">
-              <Image
-                src="/images/ghie-association-logo.png"
-                alt="Engineering Students’ Association Logo"
-                width={48}
-                height={48}
-                className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300"
-                priority
-              />
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 shrink min-w-0 group">
+            {/* Dual Institutional Logo Lockup from initial commits */}
+            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 py-1">
+              <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 flex items-center justify-center p-0.5 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200 group-hover:border-[#05b0f0]/60 transition-colors shadow-xs">
+                <Image
+                  src="/images/ghie-association-logo.png"
+                  alt="Ghana Institution of Engineering (GhIE)"
+                  width={40}
+                  height={40}
+                  className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300"
+                  priority
+                />
+              </div>
+
+              <div className="h-5 sm:h-6 w-[1.5px] bg-slate-200 hidden xs:block" />
+
+              <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 hidden xs:flex items-center justify-center p-0.5 rounded-lg sm:rounded-xl bg-slate-50 border border-slate-200 group-hover:border-[#05b0f0]/60 transition-colors shadow-xs">
+                <Image
+                  src="/images/school-logo.png"
+                  alt="AAMUSTED University"
+                  width={40}
+                  height={40}
+                  className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-300"
+                  priority
+                />
+              </div>
             </div>
             
-            <div className="flex flex-col">
-              <span className="font-heading font-extrabold text-[18px] sm:text-[20px] text-[#001e5a] tracking-tight whitespace-nowrap leading-tight group-hover:text-[#05b0f0] transition-colors">
+            <div className="flex flex-col min-w-0">
+              <span className="font-heading font-extrabold text-[14px] xs:text-[15px] sm:text-[18px] lg:text-[20px] text-[#001e5a] tracking-tight truncate leading-tight group-hover:text-[#05b0f0] transition-colors">
                 Engineering Students’ Association
               </span>
-              <span className="font-mono text-[11px] sm:text-[12px] font-bold text-[#617086] tracking-wider uppercase whitespace-nowrap">
+              <span className="font-mono text-[9px] xs:text-[10px] sm:text-[11px] lg:text-[12px] font-bold text-[#617086] tracking-wider uppercase truncate">
                 GhIE Student Chapter · AAMUSTED
               </span>
             </div>
           </Link>
 
           {/* Right: Desktop Navigation Links & Action CTA */}
-          <div className="hidden lg:flex items-center gap-7 xl:gap-8">
+          <div className="hidden lg:flex items-center gap-7 xl:gap-8 shrink-0">
             <nav aria-label="Main Navigation" className="flex items-center gap-1 xl:gap-2">
               <Link
                 href="/"
@@ -123,20 +139,20 @@ export default function Header({ onOpenPortal }) {
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex lg:hidden items-center gap-3">
+          <div className="flex lg:hidden items-center gap-2 shrink-0">
             <button
               onClick={() => onOpenPortal ? onOpenPortal() : null}
-              className="inline-flex items-center justify-center gap-1.5 bg-[#05b0f0] text-[#001e5a] font-sans font-bold text-sm px-4 py-2 rounded-full shadow-xs active:scale-95 transition-transform"
+              className="inline-flex items-center justify-center gap-1 bg-[#05b0f0] text-[#001e5a] font-sans font-bold text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-xs active:scale-95 transition-transform shrink-0"
             >
               <span>Join</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-[#001e5a]" strokeWidth={2.4} />
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-[#001e5a] hover:bg-slate-100 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg text-[#001e5a] hover:bg-slate-100 transition-colors shrink-0"
               aria-label="Toggle Navigation Menu"
             >
-              {mobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
