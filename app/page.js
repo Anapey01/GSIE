@@ -8,7 +8,6 @@ import NewsSection from '@/components/figma/NewsSection';
 import EventsCalendarSection from '@/components/figma/EventsCalendarSection';
 import MembershipCTA from '@/components/figma/MembershipCTA';
 import FooterSection from '@/components/figma/FooterSection';
-import OvaScrollSlider from '@/components/figma/OvaScrollSlider';
 
 import PortalModal from '@/components/PortalModal';
 import Preloader from '@/components/Preloader';
@@ -34,10 +33,7 @@ export default function Home() {
                 <ExecutivesSection />
 
         {/* 4. News and Stories (Section intro + 3 story cards) */}
-        <OvaScrollSlider />
-
-        {/* 4. News and Stories */}
-        <NewsSection />
+                <NewsSection />
 
         {/* 5. Calendar and Upcoming Events (Intro + Month calendar + 3 upcoming events) */}
         <EventsCalendarSection />
