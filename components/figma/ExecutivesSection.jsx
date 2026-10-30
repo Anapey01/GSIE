@@ -36,6 +36,7 @@ const SCROLL_LERP = 0.08;
 export default function ExecutivesSection() {
   const containerRef = useRef(null);
   const slidesRef = useRef([]);
+  const textRefs = useRef([]);
 
   const scrollTargetRef = useRef(0);
   const scrollCurrentRef = useRef(0);
@@ -43,14 +44,13 @@ export default function ExecutivesSection() {
   useEffect(() => {
     const container = containerRef.current;
     const slideElements = slidesRef.current;
+    const textElements = textRefs.current;
     if (!container) return;
 
     let containerWidth = container.clientWidth || window.innerWidth;
     let isMobile = containerWidth < 768;
 
-    // Dimensions tuned so card holds image + neat text underneath
     let slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
-    // Extra vertical height for the clean text beneath photo
     let slideHeight = isMobile ? slideWidth * 1.55 : 380;
     let slideGap = isMobile ? slideWidth * 0.62 : 160;
     let arcDepth = isMobile ? 50 : 100;
@@ -82,22 +82,25 @@ export default function ExecutivesSection() {
       const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * arcDepth;
       const centerLiftY = Math.max(1 - absDist * 2, 0) * centerLift;
 
+      // Text opacity: only visible when the card is in the center spotlight
+      const textOpacity = Math.max(1 - Math.abs(normalizedDist) * 3.5, 0);
+
       return {
         x: slideCenterX - scaledWidth / 2,
         y: arcBaselineY - scaledHeight / 2 + arcDropY - centerLiftY,
         width: scaledWidth,
         height: scaledHeight,
         zIndex: Math.round((1.5 - absDist) * 100),
+        textOpacity,
       };
     }
 
     function layoutSlides(scrollOffset) {
       slideElements.forEach((slideEl, i) => {
         if (!slideEl) return;
-        const { x, y, width, height, zIndex } = computeSlideTransform(
-          i,
-          scrollOffset
-        );
+        const { x, y, width, height, zIndex, textOpacity } =
+          computeSlideTransform(i, scrollOffset);
+
         gsap.set(slideEl, {
           x,
           y,
@@ -105,6 +108,14 @@ export default function ExecutivesSection() {
           height,
           zIndex,
         });
+
+        const textEl = textElements[i];
+        if (textEl) {
+          gsap.set(textEl, {
+            opacity: textOpacity,
+            y: (1 - textOpacity) * 8, // subtle 8px rise-in as it reaches center
+          });
+        }
       });
     }
 
@@ -254,7 +265,7 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* 3D Arc Stage with Minimalist Text Directly Beneath Photo */}
+        {/* 3D Arc Stage */}
         <div
           ref={containerRef}
           className="relative w-full h-[400px] sm:h-[450px] lg:h-[490px] overflow-hidden cursor-grab active:cursor-grabbing"
@@ -277,8 +288,12 @@ export default function ExecutivesSection() {
                 />
               </div>
 
-              {/* Minimalist Details Directly Beneath the Photo */}
-              <div className="pt-2 sm:pt-2.5 px-1 flex flex-col pointer-events-none">
+              {/* Minimalist Details Beneath Photo — ONLY visible for the active card in spotlight */}
+              <div
+                ref={(el) => (textRefs.current[idx] = el)}
+                className="pt-2 sm:pt-2.5 px-1 flex flex-col pointer-events-none transition-none"
+                style={{ opacity: 0 }}
+              >
                 <span className="text-[10px] sm:text-[11px] font-bold text-[#05b0f0] tracking-wider uppercase truncate">
                   {exec.role}
                 </span>
