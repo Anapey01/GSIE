@@ -28,16 +28,9 @@ const EXECUTIVES = [
   },
 ];
 
-// Clean, compact proportions
-const SLIDE_WIDTH = 190;
-const SLIDE_HEIGHT = 250;
-const SLIDE_GAP = 120;
-const ARC_DEPTH = 25;
-const CENTER_LIFT = 18;
-const SCROLL_LERP = 0.06;
-
 const SLIDES = [...EXECUTIVES, ...EXECUTIVES];
 const SLIDE_COUNT = SLIDES.length;
+const SCROLL_LERP = 0.07;
 
 export default function ExecutivesSection() {
   const containerRef = useRef(null);
@@ -46,43 +39,59 @@ export default function ExecutivesSection() {
 
   const scrollTargetRef = useRef(0);
   const scrollCurrentRef = useRef(0);
+  const slideGapRef = useRef(150);
 
   useEffect(() => {
     const container = containerRef.current;
     const slideElements = slidesRef.current;
     if (!container) return;
 
-    const trackWidth = SLIDE_COUNT * SLIDE_GAP;
-    let windowWidth = container.clientWidth || window.innerWidth;
-    let windowHeight = container.clientHeight || 350;
-    let windowCenterX = windowWidth / 2;
-    let arcBaselineY = windowHeight * 0.44;
+    let containerWidth = container.clientWidth || window.innerWidth;
+    let isMobile = containerWidth < 768;
+
+    // Strict responsive parameters based on real screen width
+    let slideWidth = isMobile ? Math.min(containerWidth * 0.46, 175) : 210;
+    let slideHeight = isMobile ? slideWidth * 1.34 : 280;
+    // Mobile slideGap needs to be proportional to screen so cards don't cluster on phone screens
+    let slideGap = isMobile ? Math.max(containerWidth * 0.42, 140) : 170;
+    slideGapRef.current = slideGap;
+
+    let arcDepth = isMobile ? 20 : 35;
+    let centerLift = isMobile ? 12 : 22;
+
+    let trackWidth = SLIDE_COUNT * slideGap;
+    let windowCenterX = containerWidth / 2;
+    // Keeps the center card well above the text so faces aren't clipped at the top
+    let arcBaselineY = isMobile ? slideHeight * 0.58 : slideHeight * 0.52;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
-        (((slideIndex * SLIDE_GAP - scrollOffset) % trackWidth) + trackWidth) %
+        (((slideIndex * slideGap - scrollOffset) % trackWidth) + trackWidth) %
         trackWidth;
       if (wrappedOffsetX > trackWidth / 2) wrappedOffsetX -= trackWidth;
 
       const slideCenterX = windowCenterX + wrappedOffsetX;
       const normalizedDist =
-        (slideCenterX - windowCenterX) / (windowWidth * 0.5);
+        (slideCenterX - windowCenterX) / (containerWidth * 0.45);
       const absDist = Math.min(Math.abs(normalizedDist), 1.3);
 
-      const scaleFactor = Math.max(1 - absDist * 0.28, 0.72);
-      const scaledWidth = SLIDE_WIDTH * scaleFactor;
-      const scaledHeight = SLIDE_HEIGHT * scaleFactor;
+      const scaleFactor = Math.max(
+        1 - absDist * (isMobile ? 0.28 : 0.32),
+        isMobile ? 0.72 : 0.68
+      );
+      const scaledWidth = slideWidth * scaleFactor;
+      const scaledHeight = slideHeight * scaleFactor;
 
       const clampedDist = Math.min(absDist, 1);
-      const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * ARC_DEPTH;
-      const centerLiftY = Math.max(1 - absDist * 2, 0) * CENTER_LIFT;
+      const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * arcDepth;
+      const centerLiftY = Math.max(1 - absDist * 2, 0) * centerLift;
 
       return {
         x: slideCenterX - scaledWidth / 2,
         y: arcBaselineY - scaledHeight / 2 + arcDropY - centerLiftY,
         width: scaledWidth,
         height: scaledHeight,
-        zIndex: Math.round((1 - absDist) * 100),
+        zIndex: Math.round((1.5 - absDist) * 100),
         distanceFromCenter: Math.abs(wrappedOffsetX),
       };
     }
@@ -120,8 +129,29 @@ export default function ExecutivesSection() {
     }
 
     const onWheel = (e) => {
-      e.preventDefault();
-      scrollTargetRef.current += e.deltaY * 0.5;
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (Math.abs(delta) > 3) {
+        scrollTargetRef.current += delta * 0.6;
+      }
+    };
+
+    let isDragging = false;
+    let dragStartX = 0;
+
+    const onMouseDown = (e) => {
+      isDragging = true;
+      dragStartX = e.clientX;
+    };
+
+    const onMouseMove = (e) => {
+      if (!isDragging) return;
+      const diff = dragStartX - e.clientX;
+      scrollTargetRef.current += diff * 1.3;
+      dragStartX = e.clientX;
+    };
+
+    const onMouseUp = () => {
+      isDragging = false;
     };
 
     let touchStartX = 0;
@@ -130,15 +160,17 @@ export default function ExecutivesSection() {
     };
 
     const onTouchMove = (e) => {
-      e.preventDefault();
       const touchCurrentX = e.touches[0].clientX;
-      scrollTargetRef.current += (touchStartX - touchCurrentX) * 1.3;
+      scrollTargetRef.current += (touchStartX - touchCurrentX) * 1.4;
       touchStartX = touchCurrentX;
     };
 
-    container.addEventListener('wheel', onWheel, { passive: false });
-    container.addEventListener('touchstart', onTouchStart);
-    container.addEventListener('touchmove', onTouchMove, { passive: false });
+    container.addEventListener('wheel', onWheel, { passive: true });
+    container.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchmove', onTouchMove, { passive: true });
 
     let rafId;
     function animate() {
@@ -154,16 +186,29 @@ export default function ExecutivesSection() {
     animate();
 
     const onResize = () => {
-      windowWidth = container.clientWidth || window.innerWidth;
-      windowHeight = container.clientHeight || 350;
-      windowCenterX = windowWidth / 2;
-      arcBaselineY = windowHeight * 0.44;
+      containerWidth = container.clientWidth || window.innerWidth;
+      isMobile = containerWidth < 768;
+
+      slideWidth = isMobile ? Math.min(containerWidth * 0.46, 175) : 210;
+      slideHeight = isMobile ? slideWidth * 1.34 : 280;
+      slideGap = isMobile ? Math.max(containerWidth * 0.42, 140) : 170;
+      slideGapRef.current = slideGap;
+
+      arcDepth = isMobile ? 20 : 35;
+      centerLift = isMobile ? 12 : 22;
+
+      trackWidth = SLIDE_COUNT * slideGap;
+      windowCenterX = containerWidth / 2;
+      arcBaselineY = isMobile ? slideHeight * 0.58 : slideHeight * 0.52;
     };
 
     window.addEventListener('resize', onResize);
 
     return () => {
       container.removeEventListener('wheel', onWheel);
+      container.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
       container.removeEventListener('touchstart', onTouchStart);
       container.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('resize', onResize);
@@ -172,23 +217,23 @@ export default function ExecutivesSection() {
   }, []);
 
   const slidePrev = () => {
-    scrollTargetRef.current -= SLIDE_GAP;
+    scrollTargetRef.current -= slideGapRef.current;
   };
 
   const slideNext = () => {
-    scrollTargetRef.current += SLIDE_GAP;
+    scrollTargetRef.current += slideGapRef.current;
   };
 
   return (
     <section
       id="executives"
       data-reveal
-      className="relative w-full bg-[#001e5a] text-white py-8 sm:py-10 lg:py-12 border-b border-white/10 overflow-hidden select-none"
+      className="relative w-full bg-[#001e5a] text-white py-10 sm:py-14 border-b border-white/10 overflow-hidden select-none"
     >
       {/* Background Ambience */}
       <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-[#05b0f0]/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-3 relative z-10">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-4 relative z-10">
         
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
@@ -200,7 +245,7 @@ export default function ExecutivesSection() {
               </span>
             </div>
 
-            <h2 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-[30px] text-white tracking-tight leading-tight">
+            <h2 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-[32px] text-white tracking-tight leading-tight">
               Meet the executive council.
             </h2>
 
@@ -228,26 +273,22 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* Compact 3D Arc Stage (Height: 340px) */}
+        {/* 3D Arc Stage (Height: 330px mobile, 380px desktop) */}
         <div
           ref={containerRef}
-          className="relative w-full h-[320px] sm:h-[340px] lg:h-[350px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[330px] sm:h-[370px] lg:h-[390px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
               key={idx}
               ref={(el) => (slidesRef.current[idx] = el)}
-              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_16px_32px_rgba(0,0,0,0.6)] will-change-transform bg-black border border-white/20"
-              style={{
-                width: `${SLIDE_WIDTH}px`,
-                height: `${SLIDE_HEIGHT}px`,
-              }}
+              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_16px_32px_rgba(0,0,0,0.65)] will-change-transform bg-black border border-white/20"
             >
               <Image
                 src={exec.image}
                 alt={exec.name}
                 fill
-                sizes="220px"
+                sizes="(max-width: 768px) 180px, 220px"
                 className="object-cover object-top pointer-events-none"
                 priority={idx < 4}
               />
@@ -255,11 +296,11 @@ export default function ExecutivesSection() {
           ))}
 
           {/* Centered Title */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
+          <div className="absolute bottom-1.5 sm:bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
             <span className="text-[10px] sm:text-[11px] font-bold text-[#05b0f0] tracking-widest uppercase mb-0.5 drop-shadow-sm">
               {activeTitle.role}
             </span>
-            <h3 className="font-heading font-extrabold text-lg sm:text-xl lg:text-2xl text-white tracking-tight drop-shadow-md">
+            <h3 className="font-heading font-extrabold text-lg sm:text-xl lg:text-2xl text-white tracking-tight drop-shadow-md truncate max-w-full">
               {activeTitle.name}
             </h3>
           </div>
