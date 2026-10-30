@@ -26,11 +26,36 @@ const EXECUTIVES = [
     name: 'Elizabeth',
     image: '/images/executives/elizabeth.jpg',
   },
+  {
+    role: 'Financial Secretary',
+    name: 'Executive Member',
+    image: '/images/executives/exec-5.png',
+  },
+  {
+    role: 'Organizing Secretary',
+    name: 'Executive Member',
+    image: '/images/executives/exec-6.png',
+  },
+  {
+    role: 'Technical Lead',
+    name: 'Executive Member',
+    image: '/images/executives/exec-7.png',
+  },
+  {
+    role: 'Projects Head',
+    name: 'Executive Member',
+    image: '/images/executives/exec-8.jpg',
+  },
+  {
+    role: 'Welfare Officer',
+    name: 'Executive Member',
+    image: '/images/executives/exec-9.jpg',
+  },
 ];
 
-const SLIDES = [...EXECUTIVES, ...EXECUTIVES];
-const SLIDE_COUNT = SLIDES.length;
-const SCROLL_LERP = 0.07;
+const SLIDES = EXECUTIVES;
+const SLIDE_COUNT = 9;
+const SCROLL_LERP = 0.05;
 
 export default function ExecutivesSection() {
   const containerRef = useRef(null);
@@ -39,7 +64,7 @@ export default function ExecutivesSection() {
 
   const scrollTargetRef = useRef(0);
   const scrollCurrentRef = useRef(0);
-  const slideGapRef = useRef(180);
+  const slideGapRef = useRef(140);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -49,19 +74,20 @@ export default function ExecutivesSection() {
     let containerWidth = container.clientWidth || window.innerWidth;
     let isMobile = containerWidth < 768;
 
-    // Substantially larger card proportions
-    let slideWidth = isMobile ? Math.min(containerWidth * 0.58, 230) : 260;
-    let slideHeight = isMobile ? slideWidth * 1.36 : 355;
-    let slideGap = isMobile ? slideWidth * 0.72 : 185;
+    // Proportions matching Codegrid Voku cosine slider
+    // In original Voku: WIDTH 200, HEIGHT 275, GAP 100, ARC 200, LIFT 100
+    // Scaled up slightly for modern crisp view:
+    let slideWidth = isMobile ? Math.min(containerWidth * 0.52, 210) : 230;
+    let slideHeight = isMobile ? slideWidth * 1.38 : 315;
+    let slideGap = isMobile ? 120 : 140;
     slideGapRef.current = slideGap;
 
-    let arcDepth = isMobile ? 30 : 45;
-    let centerLift = isMobile ? 18 : 28;
+    let arcDepth = isMobile ? 120 : 170;
+    let centerLift = isMobile ? 60 : 85;
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    // Balanced vertical center so image and bottom text feel connected
-    let arcBaselineY = isMobile ? slideHeight * 0.56 : slideHeight * 0.52;
+    let arcBaselineY = isMobile ? slideHeight * 0.54 : slideHeight * 0.52;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -70,18 +96,19 @@ export default function ExecutivesSection() {
       if (wrappedOffsetX > trackWidth / 2) wrappedOffsetX -= trackWidth;
 
       const slideCenterX = windowCenterX + wrappedOffsetX;
+      // Normalized distance from center (0 = center, 1 = edges)
       const normalizedDist =
-        (slideCenterX - windowCenterX) / (containerWidth * 0.45);
+        (slideCenterX - windowCenterX) / (containerWidth * 0.5);
       const absDist = Math.min(Math.abs(normalizedDist), 1.3);
 
-      const scaleFactor = Math.max(
-        1 - absDist * (isMobile ? 0.28 : 0.32),
-        isMobile ? 0.72 : 0.68
-      );
+      // True cosine drop and scale taper from original Codegrid Voku:
+      // scale drops smoothly away from center
+      const scaleFactor = Math.max(1 - absDist * 0.65, isMobile ? 0.38 : 0.32);
       const scaledWidth = slideWidth * scaleFactor;
       const scaledHeight = slideHeight * scaleFactor;
 
       const clampedDist = Math.min(absDist, 1);
+      // Cosine drop curve: (1 - cos(x * pi)) * 0.5
       const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * arcDepth;
       const centerLiftY = Math.max(1 - absDist * 2, 0) * centerLift;
 
@@ -188,17 +215,17 @@ export default function ExecutivesSection() {
       containerWidth = container.clientWidth || window.innerWidth;
       isMobile = containerWidth < 768;
 
-      slideWidth = isMobile ? Math.min(containerWidth * 0.58, 230) : 260;
-      slideHeight = isMobile ? slideWidth * 1.36 : 355;
-      slideGap = isMobile ? slideWidth * 0.72 : 185;
+      slideWidth = isMobile ? Math.min(containerWidth * 0.52, 210) : 230;
+      slideHeight = isMobile ? slideWidth * 1.38 : 315;
+      slideGap = isMobile ? 120 : 140;
       slideGapRef.current = slideGap;
 
-      arcDepth = isMobile ? 30 : 45;
-      centerLift = isMobile ? 18 : 28;
+      arcDepth = isMobile ? 120 : 170;
+      centerLift = isMobile ? 60 : 85;
 
       trackWidth = SLIDE_COUNT * slideGap;
       windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? slideHeight * 0.56 : slideHeight * 0.52;
+      arcBaselineY = isMobile ? slideHeight * 0.54 : slideHeight * 0.52;
     };
 
     window.addEventListener('resize', onResize);
