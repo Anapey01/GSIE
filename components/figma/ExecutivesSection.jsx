@@ -28,96 +28,82 @@ const EXECUTIVES = [
   },
 ];
 
-const SLIDES = [...EXECUTIVES, ...EXECUTIVES, ...EXECUTIVES];
+// Exact constants from CODE.zip Slider.jsx
+const SLIDE_WIDTH = 200;
+const SLIDE_HEIGHT = 275;
+const SLIDE_GAP = 100;
+const ARC_DEPTH = 200;
+const CENTER_LIFT = 100;
+const SCROLL_LERP = 0.05;
+
+// Build slides list matching original 8-9 count
+const SLIDES = [...EXECUTIVES, ...EXECUTIVES];
 const SLIDE_COUNT = SLIDES.length;
-const SCROLL_LERP = 0.08;
 
 export default function ExecutivesSection() {
   const containerRef = useRef(null);
   const slidesRef = useRef([]);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeTitle, setActiveTitle] = useState(EXECUTIVES[0]);
 
   const scrollTargetRef = useRef(0);
   const scrollCurrentRef = useRef(0);
-  const slideGapRef = useRef(165);
 
   useEffect(() => {
     const container = containerRef.current;
     const slideElements = slidesRef.current;
     if (!container) return;
 
-    let containerWidth = container.clientWidth || window.innerWidth;
-    let isMobile = containerWidth < 768;
+    const trackWidth = SLIDE_COUNT * SLIDE_GAP;
+    let windowWidth = container.clientWidth || window.innerWidth;
+    let windowHeight = container.clientHeight || 520;
+    let windowCenterX = windowWidth / 2;
+    let arcBaselineY = windowHeight * 0.45;
 
-    let slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
-    let slideHeight = isMobile ? slideWidth * 1.35 : 340;
-    let slideGap = isMobile ? slideWidth * 0.64 : 165;
-    slideGapRef.current = slideGap;
-
-    let arcDepth = isMobile ? 40 : 80;
-    let centerLift = isMobile ? 25 : 50;
-
-    let trackWidth = SLIDE_COUNT * slideGap;
-    let windowCenterX = containerWidth / 2;
-    let arcBaselineY = isMobile ? 120 : 160;
-
+    // Exact mathematical formula from CODE.zip
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
-        (((slideIndex * slideGap - scrollOffset) % trackWidth) + trackWidth) %
+        (((slideIndex * SLIDE_GAP - scrollOffset) % trackWidth) + trackWidth) %
         trackWidth;
       if (wrappedOffsetX > trackWidth / 2) wrappedOffsetX -= trackWidth;
 
       const slideCenterX = windowCenterX + wrappedOffsetX;
       const normalizedDist =
-        (slideCenterX - windowCenterX) / (containerWidth * 0.45);
+        (slideCenterX - windowCenterX) / (windowWidth * 0.5);
       const absDist = Math.min(Math.abs(normalizedDist), 1.3);
 
-      const scaleFactor = Math.max(
-        1 - absDist * (isMobile ? 0.32 : 0.45),
-        isMobile ? 0.68 : 0.52
-      );
-      const scaledWidth = slideWidth * scaleFactor;
-      const scaledHeight = slideHeight * scaleFactor;
+      const scaleFactor = Math.max(1 - absDist * 0.8, 0.25);
+      const scaledWidth = SLIDE_WIDTH * scaleFactor;
+      const scaledHeight = SLIDE_HEIGHT * scaleFactor;
 
       const clampedDist = Math.min(absDist, 1);
-      const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * arcDepth;
-      const centerLiftY = Math.max(1 - absDist * 2, 0) * centerLift;
-
-      // Card opacity: Center card is fully visible (1), side cards are hidden until dragged/swapped
-      const opacity = Math.max(1 - Math.pow(absDist / 0.38, 2), 0);
+      const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * ARC_DEPTH;
+      const centerLiftY = Math.max(1 - absDist * 2, 0) * CENTER_LIFT;
 
       return {
         x: slideCenterX - scaledWidth / 2,
         y: arcBaselineY - scaledHeight / 2 + arcDropY - centerLiftY,
         width: scaledWidth,
         height: scaledHeight,
-        zIndex: Math.round((1.5 - absDist) * 100),
+        zIndex: Math.round((1 - absDist) * 100),
         distanceFromCenter: Math.abs(wrappedOffsetX),
-        opacity,
       };
     }
 
     function layoutSlides(scrollOffset) {
       slideElements.forEach((slideEl, i) => {
         if (!slideEl) return;
-        const { x, y, width, height, zIndex, opacity } = computeSlideTransform(
+        const { x, y, width, height, zIndex } = computeSlideTransform(
           i,
           scrollOffset
         );
-        gsap.set(slideEl, {
-          x,
-          y,
-          width,
-          height,
-          zIndex,
-          opacity,
-          visibility: opacity <= 0.001 ? 'hidden' : 'visible',
-        });
+        gsap.set(slideEl, { x, y, width, height, zIndex });
       });
     }
 
+    layoutSlides(0);
+
     let activeSlideIndex = -1;
-    function syncActiveSlide(scrollOffset) {
+    function syncActiveTitle(scrollOffset) {
       let closestIndex = 0;
       let closestDist = Infinity;
 
@@ -131,34 +117,13 @@ export default function ExecutivesSection() {
 
       if (closestIndex !== activeSlideIndex) {
         activeSlideIndex = closestIndex;
-        setActiveIndex(closestIndex % EXECUTIVES.length);
+        setActiveTitle(SLIDES[closestIndex]);
       }
     }
 
     const onWheel = (e) => {
-      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      if (Math.abs(delta) > 3) {
-        scrollTargetRef.current += delta * 0.8;
-      }
-    };
-
-    let isDragging = false;
-    let dragStartX = 0;
-
-    const onMouseDown = (e) => {
-      isDragging = true;
-      dragStartX = e.clientX;
-    };
-
-    const onMouseMove = (e) => {
-      if (!isDragging) return;
-      const diff = dragStartX - e.clientX;
-      scrollTargetRef.current += diff * 1.3;
-      dragStartX = e.clientX;
-    };
-
-    const onMouseUp = () => {
-      isDragging = false;
+      e.preventDefault();
+      scrollTargetRef.current += e.deltaY * 0.5;
     };
 
     let touchStartX = 0;
@@ -167,17 +132,15 @@ export default function ExecutivesSection() {
     };
 
     const onTouchMove = (e) => {
+      e.preventDefault();
       const touchCurrentX = e.touches[0].clientX;
-      scrollTargetRef.current += (touchStartX - touchCurrentX) * 1.4;
+      scrollTargetRef.current += (touchStartX - touchCurrentX) * 1.2;
       touchStartX = touchCurrentX;
     };
 
-    container.addEventListener('wheel', onWheel, { passive: true });
-    container.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
-    container.addEventListener('touchstart', onTouchStart, { passive: true });
-    container.addEventListener('touchmove', onTouchMove, { passive: true });
+    container.addEventListener('wheel', onWheel, { passive: false });
+    container.addEventListener('touchstart', onTouchStart);
+    container.addEventListener('touchmove', onTouchMove, { passive: false });
 
     let rafId;
     function animate() {
@@ -185,7 +148,7 @@ export default function ExecutivesSection() {
         (scrollTargetRef.current - scrollCurrentRef.current) * SCROLL_LERP;
 
       layoutSlides(scrollCurrentRef.current);
-      syncActiveSlide(scrollCurrentRef.current);
+      syncActiveTitle(scrollCurrentRef.current);
 
       rafId = requestAnimationFrame(animate);
     }
@@ -193,29 +156,16 @@ export default function ExecutivesSection() {
     animate();
 
     const onResize = () => {
-      containerWidth = container.clientWidth || window.innerWidth;
-      isMobile = containerWidth < 768;
-
-      slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
-      slideHeight = isMobile ? slideWidth * 1.35 : 340;
-      slideGap = isMobile ? slideWidth * 0.64 : 165;
-      slideGapRef.current = slideGap;
-
-      arcDepth = isMobile ? 40 : 80;
-      centerLift = isMobile ? 25 : 50;
-
-      trackWidth = SLIDE_COUNT * slideGap;
-      windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? 120 : 160;
+      windowWidth = container.clientWidth || window.innerWidth;
+      windowHeight = container.clientHeight || 520;
+      windowCenterX = windowWidth / 2;
+      arcBaselineY = windowHeight * 0.45;
     };
 
     window.addEventListener('resize', onResize);
 
     return () => {
       container.removeEventListener('wheel', onWheel);
-      container.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
       container.removeEventListener('touchstart', onTouchStart);
       container.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('resize', onResize);
@@ -224,14 +174,12 @@ export default function ExecutivesSection() {
   }, []);
 
   const slidePrev = () => {
-    scrollTargetRef.current -= slideGapRef.current;
+    scrollTargetRef.current -= SLIDE_GAP;
   };
 
   const slideNext = () => {
-    scrollTargetRef.current += slideGapRef.current;
+    scrollTargetRef.current += SLIDE_GAP;
   };
-
-  const currentExec = EXECUTIVES[activeIndex] || EXECUTIVES[0];
 
   return (
     <section
@@ -282,37 +230,41 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* 3D Arc Stage */}
+        {/* 3D Arc Stage (Exact Codegrid Voku Slider Implementation) */}
         <div
           ref={containerRef}
-          className="relative w-full h-[245px] sm:h-[305px] lg:h-[335px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[460px] sm:h-[500px] lg:h-[520px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
               key={idx}
               ref={(el) => (slidesRef.current[idx] = el)}
               className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.65)] will-change-transform bg-black"
+              style={{
+                width: `${SLIDE_WIDTH}px`,
+                height: `${SLIDE_HEIGHT}px`,
+              }}
             >
               <Image
                 src={exec.image}
                 alt={exec.name}
                 fill
-                sizes="(max-width: 768px) 215px, 280px"
+                sizes="240px"
                 className="object-cover object-top pointer-events-none"
                 priority={idx < 4}
               />
             </div>
           ))}
-        </div>
 
-        {/* Minimalist Name & Role Placed Directly Close Below Center Card */}
-        <div className="w-full flex flex-col items-center text-center pt-2 sm:pt-3 pointer-events-none">
-          <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase mb-1">
-            {currentExec.role}
-          </span>
-          <h3 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-3xl text-white tracking-tight">
-            {currentExec.name}
-          </h3>
+          {/* Exact Slide-Title element from CODE.zip Slider */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
+            <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase mb-1">
+              {activeTitle.role}
+            </span>
+            <h3 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-3xl text-white tracking-tight drop-shadow-md">
+              {activeTitle.name}
+            </h3>
+          </div>
         </div>
 
       </div>
