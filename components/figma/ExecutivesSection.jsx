@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import gsap from 'gsap';
@@ -28,91 +28,212 @@ const EXECUTIVES = [
   },
 ];
 
+// Replicate list to support continuous circular loop
+const SLIDES = [...EXECUTIVES, ...EXECUTIVES, ...EXECUTIVES];
+const SLIDE_COUNT = SLIDES.length;
+const SCROLL_LERP = 0.08;
+
 export default function ExecutivesSection() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [animating, setAnimating] = useState(false);
-  const currentCardRef = useRef(null);
-  const nextCardRef = useRef(null);
-  const touchStartXRef = useRef(0);
+  const containerRef = useRef(null);
+  const slidesRef = useRef([]);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  const swapTo = (nextIndex, direction = 1) => {
-    if (animating) return;
-    setAnimating(true);
+  const scrollTargetRef = useRef(0);
+  const scrollCurrentRef = useRef(0);
 
-    const currentCard = currentCardRef.current;
-    const nextCard = nextCardRef.current;
+  useEffect(() => {
+    const container = containerRef.current;
+    const slideElements = slidesRef.current;
+    if (!container) return;
 
-    // Reset styles
-    gsap.set(nextCard, {
-      x: direction * 140,
-      scale: 0.88,
-      opacity: 0,
-      zIndex: 20,
-    });
-    gsap.set(currentCard, {
-      zIndex: 10,
-    });
+    let containerWidth = container.clientWidth || window.innerWidth;
+    let isMobile = containerWidth < 768;
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setCurrentIndex(nextIndex);
-        gsap.set(currentCard, { x: 0, scale: 1, opacity: 1 });
-        setAnimating(false);
-      },
-    });
+    let slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
+    let slideHeight = isMobile ? slideWidth * 1.35 : 340;
+    let slideGap = isMobile ? slideWidth * 0.64 : 165;
+    let arcDepth = isMobile ? 40 : 80;
+    let centerLift = isMobile ? 25 : 50;
 
-    // 3D smooth swap transition
-    tl.to(
-      currentCard,
-      {
-        x: -direction * 140,
-        scale: 0.88,
-        opacity: 0,
-        duration: 0.55,
-        ease: 'power2.inOut',
-      },
-      0
-    );
+    let trackWidth = SLIDE_COUNT * slideGap;
+    let windowCenterX = containerWidth / 2;
+    let arcBaselineY = isMobile ? 120 : 160;
 
-    tl.to(
-      nextCard,
-      {
-        x: 0,
-        scale: 1,
-        opacity: 1,
-        duration: 0.55,
-        ease: 'power2.inOut',
-      },
-      0
-    );
-  };
+    function computeSlideTransform(slideIndex, scrollOffset) {
+      let wrappedOffsetX =
+        (((slideIndex * slideGap - scrollOffset) % trackWidth) + trackWidth) %
+        trackWidth;
+      if (wrappedOffsetX > trackWidth / 2) wrappedOffsetX -= trackWidth;
+
+      const slideCenterX = windowCenterX + wrappedOffsetX;
+      const normalizedDist =
+        (slideCenterX - windowCenterX) / (containerWidth * 0.45);
+      const absDist = Math.min(Math.abs(normalizedDist), 1.3);
+
+      const scaleFactor = Math.max(
+        1 - absDist * (isMobile ? 0.32 : 0.45),
+        isMobile ? 0.68 : 0.52
+      );
+      const scaledWidth = slideWidth * scaleFactor;
+      const scaledHeight = slideHeight * scaleFactor;
+
+      const clampedDist = Math.min(absDist, 1);
+      const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * arcDepth;
+      const centerLiftY = Math.max(1 - absDist * 2, 0) * centerLift;
+
+      // Only reveal adjacent cards when actively swapping:
+      // When at center (absDist ~ 0), opacity is 1.
+      // Outside swap threshold (absDist > 0.45), opacity fades smoothly to 0.
+      const opacity = Math.max(1 - Math.pow(absDist / 0.55, 3), 0);
+
+      return {
+        x: slideCenterX - scaledWidth / 2,
+        y: arcBaselineY - scaledHeight / 2 + arcDropY - centerLiftY,
+        width: scaledWidth,
+        height: scaledHeight,
+        zIndex: Math.round((1.5 - absDist) * 100),
+        distanceFromCenter: Math.abs(wrappedOffsetX),
+        opacity,
+      };
+    }
+
+    function layoutSlides(scrollOffset) {
+      slideElements.forEach((slideEl, i) => {
+        if (!slideEl) return;
+        const { x, y, width, height, zIndex, opacity } = computeSlideTransform(
+          i,
+          scrollOffset
+        );
+        gsap.set(slideEl, {
+          x,
+          y,
+          width,
+          height,
+          zIndex,
+          opacity,
+          visibility: opacity < 0.01 ? 'hidden' : 'visible',
+        });
+      });
+    }
+
+    let activeSlideIndex = -1;
+    function syncActiveSlide(scrollOffset) {
+      let closestIndex = 0;
+      let closestDist = Infinity;
+
+      slideElements.forEach((_, i) => {
+        const { distanceFromCenter } = computeSlideTransform(i, scrollOffset);
+        if (distanceFromCenter < closestDist) {
+          closestDist = distanceFromCenter;
+          closestIndex = i;
+        }
+      });
+
+      if (closestIndex !== activeSlideIndex) {
+        activeSlideIndex = closestIndex;
+        setActiveIndex(closestIndex % EXECUTIVES.length);
+      }
+    }
+
+    const onWheel = (e) => {
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (Math.abs(delta) > 3) {
+        scrollTargetRef.current += delta * 0.8;
+      }
+    };
+
+    let isDragging = false;
+    let dragStartX = 0;
+
+    const onMouseDown = (e) => {
+      isDragging = true;
+      dragStartX = e.clientX;
+    };
+
+    const onMouseMove = (e) => {
+      if (!isDragging) return;
+      const diff = dragStartX - e.clientX;
+      scrollTargetRef.current += diff * 1.3;
+      dragStartX = e.clientX;
+    };
+
+    const onMouseUp = () => {
+      isDragging = false;
+    };
+
+    let touchStartX = 0;
+    const onTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+    };
+
+    const onTouchMove = (e) => {
+      const touchCurrentX = e.touches[0].clientX;
+      scrollTargetRef.current += (touchStartX - touchCurrentX) * 1.4;
+      touchStartX = touchCurrentX;
+    };
+
+    container.addEventListener('wheel', onWheel, { passive: true });
+    container.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchmove', onTouchMove, { passive: true });
+
+    let rafId;
+    function animate() {
+      scrollCurrentRef.current +=
+        (scrollTargetRef.current - scrollCurrentRef.current) * SCROLL_LERP;
+
+      layoutSlides(scrollCurrentRef.current);
+      syncActiveSlide(scrollCurrentRef.current);
+
+      rafId = requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    const onResize = () => {
+      containerWidth = container.clientWidth || window.innerWidth;
+      isMobile = containerWidth < 768;
+
+      slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
+      slideHeight = isMobile ? slideWidth * 1.35 : 340;
+      slideGap = isMobile ? slideWidth * 0.64 : 165;
+      arcDepth = isMobile ? 40 : 80;
+      centerLift = isMobile ? 25 : 50;
+
+      trackWidth = SLIDE_COUNT * slideGap;
+      windowCenterX = containerWidth / 2;
+      arcBaselineY = isMobile ? 120 : 160;
+    };
+
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      container.removeEventListener('wheel', onWheel);
+      container.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('resize', onResize);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   const slidePrev = () => {
-    const next = (currentIndex - 1 + EXECUTIVES.length) % EXECUTIVES.length;
-    swapTo(next, -1);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const gap = isMobile ? 120 : 165;
+    scrollTargetRef.current -= gap;
   };
 
   const slideNext = () => {
-    const next = (currentIndex + 1) % EXECUTIVES.length;
-    swapTo(next, 1);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const gap = isMobile ? 120 : 165;
+    scrollTargetRef.current += gap;
   };
 
-  const handleTouchStart = (e) => {
-    touchStartXRef.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e) => {
-    const diff = touchStartXRef.current - e.changedTouches[0].clientX;
-    if (diff > 40) {
-      slideNext();
-    } else if (diff < -40) {
-      slidePrev();
-    }
-  };
-
-  const currentExec = EXECUTIVES[currentIndex];
-  const nextPreviewIndex = (currentIndex + 1) % EXECUTIVES.length;
-  const nextExec = EXECUTIVES[nextPreviewIndex];
+  const currentExec = EXECUTIVES[activeIndex] || EXECUTIVES[0];
 
   return (
     <section
@@ -123,7 +244,7 @@ export default function ExecutivesSection() {
       {/* Background Ambience */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#05b0f0]/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-6 sm:gap-10 relative z-10">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-6 relative z-10">
         
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
@@ -140,7 +261,7 @@ export default function ExecutivesSection() {
             </h2>
 
             <p className="font-sans text-sm sm:text-base text-[#c6d5ed] leading-relaxed">
-              Swipe or use the arrows to meet each council leader.
+              Drag or swipe to explore our leadership team.
             </p>
           </div>
 
@@ -148,60 +269,45 @@ export default function ExecutivesSection() {
           <div className="flex items-center gap-2.5 self-start sm:self-auto">
             <button
               onClick={slidePrev}
-              disabled={animating}
               aria-label="Previous executive"
-              className="p-2.5 sm:p-3 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-50"
+              className="p-2.5 sm:p-3 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer"
             >
               <ChevronLeft className="w-5 h-5" strokeWidth={2.4} />
             </button>
             <button
               onClick={slideNext}
-              disabled={animating}
               aria-label="Next executive"
-              className="p-2.5 sm:p-3 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-50"
+              className="p-2.5 sm:p-3 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer"
             >
               <ChevronRight className="w-5 h-5" strokeWidth={2.4} />
             </button>
           </div>
         </div>
 
-        {/* Solo Spotlight Stage — ONLY 1 Image Visible at a time */}
+        {/* 3D Arc Stage */}
         <div
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          className="relative w-full h-[280px] sm:h-[350px] lg:h-[380px] flex items-center justify-center cursor-grab active:cursor-grabbing"
+          ref={containerRef}
+          className="relative w-full h-[245px] sm:h-[305px] lg:h-[335px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
-          {/* Current Active Executive Card */}
-          <div
-            ref={currentCardRef}
-            className="absolute w-[210px] sm:w-[260px] lg:w-[280px] h-[280px] sm:h-[350px] lg:h-[380px] rounded-2xl overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.7)] border border-white/20 bg-black will-change-transform z-10"
-          >
-            <Image
-              src={currentExec.image}
-              alt={currentExec.name}
-              fill
-              sizes="(max-width: 768px) 210px, 280px"
-              className="object-cover object-top pointer-events-none"
-              priority
-            />
-          </div>
-
-          {/* Next Incoming Card (Completely HIDDEN until swap animation triggers) */}
-          <div
-            ref={nextCardRef}
-            className="absolute w-[210px] sm:w-[260px] lg:w-[280px] h-[280px] sm:h-[350px] lg:h-[380px] rounded-2xl overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.7)] border border-white/20 bg-black will-change-transform pointer-events-none opacity-0"
-          >
-            <Image
-              src={nextExec.image}
-              alt={nextExec.name}
-              fill
-              sizes="(max-width: 768px) 210px, 280px"
-              className="object-cover object-top pointer-events-none"
-            />
-          </div>
+          {SLIDES.map((exec, idx) => (
+            <div
+              key={idx}
+              ref={(el) => (slidesRef.current[idx] = el)}
+              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.65)] will-change-transform bg-black"
+            >
+              <Image
+                src={exec.image}
+                alt={exec.name}
+                fill
+                sizes="(max-width: 768px) 215px, 280px"
+                className="object-cover object-top pointer-events-none"
+                priority={idx < 4}
+              />
+            </div>
+          ))}
         </div>
 
-        {/* Minimalist Name & Role Placed Directly Below the Spotlight Photo */}
+        {/* Minimalist Name & Role Placed Directly Close Below Center Card */}
         <div className="w-full flex flex-col items-center text-center pt-2 sm:pt-3 pointer-events-none">
           <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase mb-1">
             {currentExec.role}
