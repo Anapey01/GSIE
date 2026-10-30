@@ -48,42 +48,32 @@ export default function Header({ onOpenPortal }) {
       <div className="w-full bg-white border-b border-slate-200">
         <div className="max-w-[1440px] mx-auto h-[78px] sm:h-[82px] px-4 sm:px-8 lg:px-12 flex items-center justify-between">
           
-          {/* Left: Brand Identity */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3.5 shrink min-w-0 group">
-            {/* Dual Institutional Logos */}
-            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 py-1">
+          {/* Left: Brand Identity (Dual Logos Only) */}
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3.5 shrink-0 group">
+            <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 py-1">
               <div className="h-8 sm:h-10 w-auto flex items-center justify-center">
                 <Image
                   src="/images/ghie-association-logo.png"
                   alt="Ghana Institution of Engineering (GhIE)"
-                  width={110}
-                  height={36}
+                  width={120}
+                  height={38}
                   className="h-7 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
                   priority
                 />
               </div>
 
-              <div className="h-5 sm:h-7 w-[1.5px] bg-slate-200" />
+              <div className="h-6 sm:h-7 w-[1.5px] bg-slate-200" />
 
               <div className="h-8 sm:h-10 w-auto flex items-center justify-center">
                 <Image
                   src="/images/school-logo.png"
                   alt="AAMUSTED University"
-                  width={130}
-                  height={36}
+                  width={140}
+                  height={38}
                   className="h-7 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
                   priority
                 />
               </div>
-            </div>
-            
-            <div className="flex flex-col min-w-0 border-l border-slate-200 pl-2.5 sm:pl-3">
-              <span className="font-heading font-extrabold text-[13px] xs:text-[14px] sm:text-[17px] lg:text-[19px] text-[#001e5a] tracking-tight truncate leading-tight group-hover:text-[#05b0f0] transition-colors">
-                Engineering Students’ Association
-              </span>
-              <span className="font-mono text-[9px] xs:text-[10px] sm:text-[11px] lg:text-[12px] font-bold text-[#617086] tracking-wider uppercase truncate">
-                GhIE Student Chapter · AAMUSTED
-              </span>
             </div>
           </Link>
 
