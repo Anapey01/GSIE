@@ -377,7 +377,26 @@ export default function HeroSection({ onOpenPortal }) {
 
     window.addEventListener('resize', onResize);
 
+    // ScrollTrigger: 24/7 Artists scroll-driven headline slide & contour compression
+    const st = ScrollTrigger.create({
+      trigger: container,
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 0.3,
+      onUpdate: (self) => {
+        const p = self.progress;
+        // Accelerate headline off-screen sideways on scroll
+        if (titleRef.current) {
+          gsap.set(titleRef.current, {
+            x: -p * (width * 0.45),
+            opacity: Math.max(1 - p * 1.5, 0),
+          });
+        }
+      },
+    });
+
     return () => {
+      st.kill();
       container.removeEventListener('mousemove', onMouseMove);
       container.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('resize', onResize);
