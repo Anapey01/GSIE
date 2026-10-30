@@ -15,24 +15,28 @@ export default function FooterSection() {
           
           {/* Col 1: Association Summary (410px in Figma, ~4-5 cols) */}
           <div className="lg:col-span-5 flex flex-col gap-5 max-w-[410px]">
-            {/* Identity with preserved old design logo */}
-            <div className="flex items-center gap-3.5">
-              <div className="relative w-11 h-11 flex-shrink-0 flex items-center justify-center">
+            {/* Dual Logos matching Header */}
+            <div className="flex items-center gap-3 py-1">
+              <div className="h-8 sm:h-9 w-auto flex items-center justify-center">
                 <Image
                   src="/images/ghie-association-logo.png"
-                  alt="Engineering Students' Association Logo"
-                  width={44}
-                  height={44}
-                  className="object-contain w-full h-full"
+                  alt="Ghana Institution of Engineering (GhIE)"
+                  width={110}
+                  height={36}
+                  className="h-7 sm:h-8 w-auto object-contain brightness-105"
                 />
               </div>
-              <div className="flex flex-col">
-                <span className="font-heading font-bold text-[15px] text-white leading-tight">
-                  Engineering Students’ Association
-                </span>
-                <span className="font-sans font-semibold text-[11px] text-[#c6d5ed] tracking-wider uppercase">
-                  STUDENT CHAPTER
-                </span>
+
+              <div className="h-6 sm:h-7 w-[1.5px] bg-white/20" />
+
+              <div className="h-8 sm:h-9 w-auto flex items-center justify-center">
+                <Image
+                  src="/images/school-logo.png"
+                  alt="AAMUSTED University"
+                  width={130}
+                  height={36}
+                  className="h-7 sm:h-8 w-auto object-contain brightness-105"
+                />
               </div>
             </div>
 
