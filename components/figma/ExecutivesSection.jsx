@@ -87,8 +87,8 @@ export default function ExecutivesSection() {
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    // Stage baseline calibrated so cards arc naturally and stay clear of text
-    let arcBaselineY = isMobile ? 220 : 240;
+    // Stage baseline lifted slightly so center card bottom sits cleanly above the name
+    let arcBaselineY = isMobile ? 200 : 215;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -227,7 +227,7 @@ export default function ExecutivesSection() {
 
       trackWidth = SLIDE_COUNT * slideGap;
       windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? 220 : 240;
+      arcBaselineY = isMobile ? 200 : 215;
     };
 
     window.addEventListener('resize', onResize);
@@ -323,9 +323,9 @@ export default function ExecutivesSection() {
             </div>
           ))}
 
-          {/* Centered Title — Positioned closely right underneath the center card */}
-          <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
-            <span className="text-[10px] sm:text-[11px] font-semibold text-[#05b0f0] tracking-wider uppercase mb-0.5">
+          {/* Centered Title — Positioned right underneath the center card with clean breathing room */}
+          <div className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
+            <span className="text-[10px] sm:text-[11px] font-semibold text-[#05b0f0] tracking-wider uppercase mb-1">
               {activeTitle.role}
             </span>
             <h3 className="font-heading font-medium text-sm sm:text-base lg:text-lg text-white tracking-normal drop-shadow-sm truncate max-w-full">
