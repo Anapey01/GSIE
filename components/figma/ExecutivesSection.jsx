@@ -32,10 +32,8 @@ const EXECUTIVES = [
   },
 ];
 
-// Replicate list to support continuous circular scrolling
 const SLIDES = [...EXECUTIVES, ...EXECUTIVES];
 const SLIDE_COUNT = SLIDES.length;
-
 const SCROLL_LERP = 0.08;
 
 export default function ExecutivesSection() {
@@ -54,16 +52,17 @@ export default function ExecutivesSection() {
     let containerWidth = container.clientWidth || window.innerWidth;
     let isMobile = containerWidth < 768;
 
-    // Dynamically adjust slide parameters based on screen width
-    let slideWidth = isMobile ? 180 : 260;
-    let slideHeight = isMobile ? 245 : 355;
-    let slideGap = isMobile ? 90 : 150;
-    let arcDepth = isMobile ? 120 : 180;
-    let centerLift = isMobile ? 45 : 75;
+    // Proportions calibrated so bottom edge never collides with title
+    let slideWidth = isMobile ? 190 : 260;
+    let slideHeight = isMobile ? 255 : 350;
+    let slideGap = isMobile ? 105 : 155;
+    let arcDepth = isMobile ? 100 : 160;
+    let centerLift = isMobile ? 40 : 65;
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    let arcBaselineY = isMobile ? 160 : 210;
+    // Arc baseline placed higher so all cards stay well above the info block
+    let arcBaselineY = isMobile ? 140 : 190;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -76,7 +75,7 @@ export default function ExecutivesSection() {
         (slideCenterX - windowCenterX) / (containerWidth * 0.45);
       const absDist = Math.min(Math.abs(normalizedDist), 1.3);
 
-      const scaleFactor = Math.max(1 - absDist * (isMobile ? 0.45 : 0.65), isMobile ? 0.5 : 0.35);
+      const scaleFactor = Math.max(1 - absDist * (isMobile ? 0.42 : 0.6), isMobile ? 0.55 : 0.4);
       const scaledWidth = slideWidth * scaleFactor;
       const scaledHeight = slideHeight * scaleFactor;
 
@@ -191,15 +190,15 @@ export default function ExecutivesSection() {
       containerWidth = container.clientWidth || window.innerWidth;
       isMobile = containerWidth < 768;
 
-      slideWidth = isMobile ? 180 : 260;
-      slideHeight = isMobile ? 245 : 355;
-      slideGap = isMobile ? 90 : 150;
-      arcDepth = isMobile ? 120 : 180;
-      centerLift = isMobile ? 45 : 75;
+      slideWidth = isMobile ? 190 : 260;
+      slideHeight = isMobile ? 255 : 350;
+      slideGap = isMobile ? 105 : 155;
+      arcDepth = isMobile ? 100 : 160;
+      centerLift = isMobile ? 40 : 65;
 
       trackWidth = SLIDE_COUNT * slideGap;
       windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? 160 : 210;
+      arcBaselineY = isMobile ? 140 : 190;
     };
 
     window.addEventListener('resize', onResize);
@@ -218,12 +217,12 @@ export default function ExecutivesSection() {
 
   const slidePrev = () => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    scrollTargetRef.current -= isMobile ? 90 : 150;
+    scrollTargetRef.current -= isMobile ? 105 : 155;
   };
 
   const slideNext = () => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    scrollTargetRef.current += isMobile ? 90 : 150;
+    scrollTargetRef.current += isMobile ? 105 : 155;
   };
 
   const currentExec = EXECUTIVES[activeIndex] || EXECUTIVES[0];
@@ -274,17 +273,16 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* Pure Voku 3D Arc Stage (Zero card overlays or nesting, exactly as in original CODE.zip) */}
+        {/* 3D Arc Stage (Height expanded so slides have ample breathing room) */}
         <div
           ref={containerRef}
-          className="relative w-full h-[380px] sm:h-[460px] lg:h-[500px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[320px] sm:h-[400px] lg:h-[430px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
-          {/* Individual Pure Image Slides */}
           {SLIDES.map((exec, idx) => (
             <div
               key={idx}
               ref={(el) => (slidesRef.current[idx] = el)}
-              className="absolute top-0 left-0 rounded-xl sm:rounded-2xl overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.5)] will-change-transform group bg-black"
+              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.55)] will-change-transform bg-black"
             >
               <Image
                 src={exec.image}
@@ -296,19 +294,22 @@ export default function ExecutivesSection() {
               />
             </div>
           ))}
+        </div>
 
-          {/* Clean Single Bottom Title (Voku Signature Slide-Title Feature) */}
-          <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
-            <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase mb-1">
+        {/* Dedicated Executive Information Area — Placed in normal flow below the arc (ZERO OVERLAP) */}
+        <div className="w-full flex flex-col items-center text-center pt-2 sm:pt-4 pb-2 z-20">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#05b0f0]/15 border border-[#05b0f0]/30 mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#05b0f0]" />
+            <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase">
               {currentExec.role}
             </span>
-            <h3 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-3xl text-white tracking-tight truncate max-w-full">
-              {currentExec.name}
-            </h3>
-            <p className="font-sans text-xs sm:text-sm text-[#c6d5ed]/80 mt-0.5">
-              {currentExec.discipline}
-            </p>
           </div>
+          <h3 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight">
+            {currentExec.name}
+          </h3>
+          <p className="font-sans text-sm sm:text-base text-[#c6d5ed]/80 mt-1">
+            {currentExec.discipline}
+          </p>
         </div>
 
       </div>
