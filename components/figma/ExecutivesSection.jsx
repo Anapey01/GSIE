@@ -309,14 +309,14 @@ export default function ExecutivesSection() {
             <div
               key={idx}
               ref={(el) => (slidesRef.current[idx] = el)}
-              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.65)] will-change-transform bg-black border border-white/20"
+              className="absolute top-0 left-0 rounded-none overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.65)] will-change-transform bg-black border border-white/20"
             >
               <Image
                 src={exec.image}
                 alt={exec.name}
                 fill
                 sizes="(max-width: 768px) 230px, 280px"
-                className="object-cover object-top pointer-events-none"
+                className="object-cover object-top pointer-events-none rounded-none"
                 priority={idx < 4}
               />
             </div>
