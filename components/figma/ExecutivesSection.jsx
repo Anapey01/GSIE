@@ -28,12 +28,12 @@ const EXECUTIVES = [
   },
 ];
 
-// Compact & refined card sizing
-const SLIDE_WIDTH = 250;
-const SLIDE_HEIGHT = 330;
-const SLIDE_GAP = 160;
-const ARC_DEPTH = 35;
-const CENTER_LIFT = 25;
+// Clean, compact proportions
+const SLIDE_WIDTH = 190;
+const SLIDE_HEIGHT = 250;
+const SLIDE_GAP = 120;
+const ARC_DEPTH = 25;
+const CENTER_LIFT = 18;
 const SCROLL_LERP = 0.06;
 
 const SLIDES = [...EXECUTIVES, ...EXECUTIVES];
@@ -54,7 +54,7 @@ export default function ExecutivesSection() {
 
     const trackWidth = SLIDE_COUNT * SLIDE_GAP;
     let windowWidth = container.clientWidth || window.innerWidth;
-    let windowHeight = container.clientHeight || 450;
+    let windowHeight = container.clientHeight || 350;
     let windowCenterX = windowWidth / 2;
     let arcBaselineY = windowHeight * 0.44;
 
@@ -69,7 +69,7 @@ export default function ExecutivesSection() {
         (slideCenterX - windowCenterX) / (windowWidth * 0.5);
       const absDist = Math.min(Math.abs(normalizedDist), 1.3);
 
-      const scaleFactor = Math.max(1 - absDist * 0.32, 0.68);
+      const scaleFactor = Math.max(1 - absDist * 0.28, 0.72);
       const scaledWidth = SLIDE_WIDTH * scaleFactor;
       const scaledHeight = SLIDE_HEIGHT * scaleFactor;
 
@@ -121,7 +121,7 @@ export default function ExecutivesSection() {
 
     const onWheel = (e) => {
       e.preventDefault();
-      scrollTargetRef.current += e.deltaY * 0.6;
+      scrollTargetRef.current += e.deltaY * 0.5;
     };
 
     let touchStartX = 0;
@@ -155,7 +155,7 @@ export default function ExecutivesSection() {
 
     const onResize = () => {
       windowWidth = container.clientWidth || window.innerWidth;
-      windowHeight = container.clientHeight || 450;
+      windowHeight = container.clientHeight || 350;
       windowCenterX = windowWidth / 2;
       arcBaselineY = windowHeight * 0.44;
     };
@@ -183,61 +183,61 @@ export default function ExecutivesSection() {
     <section
       id="executives"
       data-reveal
-      className="relative w-full bg-[#001e5a] text-white py-10 sm:py-14 lg:py-16 border-b border-white/10 overflow-hidden select-none"
+      className="relative w-full bg-[#001e5a] text-white py-8 sm:py-10 lg:py-12 border-b border-white/10 overflow-hidden select-none"
     >
       {/* Background Ambience */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#05b0f0]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-[#05b0f0]/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-4 relative z-10">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-3 relative z-10">
         
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div className="max-w-[650px] flex flex-col gap-2">
-            <div className="flex items-center gap-2.5">
-              <div className="w-[22px] h-[3px] bg-[#05b0f0] rounded-full" />
-              <span className="font-sans font-bold text-[11px] sm:text-[12px] text-[#05b0f0] tracking-[0.08em] uppercase">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div className="max-w-[650px] flex flex-col gap-1.5">
+            <div className="flex items-center gap-2">
+              <div className="w-[18px] h-[2.5px] bg-[#05b0f0] rounded-full" />
+              <span className="font-sans font-bold text-[11px] text-[#05b0f0] tracking-[0.08em] uppercase">
                 STUDENT-LED. STUDENT-FOCUSED.
               </span>
             </div>
 
-            <h2 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-[36px] text-white tracking-tight leading-tight">
+            <h2 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-[30px] text-white tracking-tight leading-tight">
               Meet the executive council.
             </h2>
 
-            <p className="font-sans text-sm sm:text-base text-[#c6d5ed] leading-relaxed">
+            <p className="font-sans text-xs sm:text-sm text-[#c6d5ed] leading-relaxed">
               Drag or swipe to explore our leadership team.
             </p>
           </div>
 
           {/* Navigation Controls */}
-          <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             <button
               onClick={slidePrev}
               aria-label="Previous executive"
-              className="p-2.5 sm:p-3 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer"
+              className="p-2 sm:p-2.5 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer"
             >
-              <ChevronLeft className="w-5 h-5" strokeWidth={2.4} />
+              <ChevronLeft className="w-4 h-4" strokeWidth={2.4} />
             </button>
             <button
               onClick={slideNext}
               aria-label="Next executive"
-              className="p-2.5 sm:p-3 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer"
+              className="p-2 sm:p-2.5 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer"
             >
-              <ChevronRight className="w-5 h-5" strokeWidth={2.4} />
+              <ChevronRight className="w-4 h-4" strokeWidth={2.4} />
             </button>
           </div>
         </div>
 
-        {/* Compact 3D Arc Stage (Height reduced from 570px to 450px) */}
+        {/* Compact 3D Arc Stage (Height: 340px) */}
         <div
           ref={containerRef}
-          className="relative w-full h-[410px] sm:h-[430px] lg:h-[450px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[320px] sm:h-[340px] lg:h-[350px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
               key={idx}
               ref={(el) => (slidesRef.current[idx] = el)}
-              className="absolute top-0 left-0 rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.65)] will-change-transform bg-black border border-white/20"
+              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_16px_32px_rgba(0,0,0,0.6)] will-change-transform bg-black border border-white/20"
               style={{
                 width: `${SLIDE_WIDTH}px`,
                 height: `${SLIDE_HEIGHT}px`,
@@ -247,7 +247,7 @@ export default function ExecutivesSection() {
                 src={exec.image}
                 alt={exec.name}
                 fill
-                sizes="300px"
+                sizes="220px"
                 className="object-cover object-top pointer-events-none"
                 priority={idx < 4}
               />
@@ -255,11 +255,11 @@ export default function ExecutivesSection() {
           ))}
 
           {/* Centered Title */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
-            <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase mb-1 drop-shadow-sm">
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
+            <span className="text-[10px] sm:text-[11px] font-bold text-[#05b0f0] tracking-widest uppercase mb-0.5 drop-shadow-sm">
               {activeTitle.role}
             </span>
-            <h3 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-3xl text-white tracking-tight drop-shadow-md">
+            <h3 className="font-heading font-extrabold text-lg sm:text-xl lg:text-2xl text-white tracking-tight drop-shadow-md">
               {activeTitle.name}
             </h3>
           </div>
