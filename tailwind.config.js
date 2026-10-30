@@ -27,8 +27,8 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          'var(--font-inter)',
-          'Inter',
+          'var(--font-ibm-plex-sans)',
+          'IBM Plex Sans',
           '-apple-system',
           'BlinkMacSystemFont',
           '"Segoe UI"',
@@ -36,8 +36,8 @@ module.exports = {
           'sans-serif',
         ],
         heading: [
-          'var(--font-inter)',
-          'Inter',
+          'var(--font-ibm-plex-sans)',
+          'IBM Plex Sans',
           '-apple-system',
           'BlinkMacSystemFont',
           '"Segoe UI"',

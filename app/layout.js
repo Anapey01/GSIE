@@ -1,11 +1,12 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
+import { IBM_Plex_Sans } from 'next/font/google';
 import GsapProvider from '@/components/animations/GsapProvider';
 
-const inter = Inter({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-ibm-plex-sans',
 });
 
 export const metadata = {
@@ -15,7 +16,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+    <html lang="en" suppressHydrationWarning className={ibmPlexSans.variable}>
       <body suppressHydrationWarning className="antialiased bg-white text-slate-900 selection:bg-[#05b0f0] selection:text-[#001e5a] font-sans">
         <GsapProvider>
           {children}
