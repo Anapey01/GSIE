@@ -28,15 +28,14 @@ const EXECUTIVES = [
   },
 ];
 
-// Exact constants from CODE.zip Slider.jsx
-const SLIDE_WIDTH = 200;
-const SLIDE_HEIGHT = 275;
-const SLIDE_GAP = 100;
-const ARC_DEPTH = 200;
-const CENTER_LIFT = 100;
-const SCROLL_LERP = 0.05;
+// Larger, more heroic card sizing while preserving the cosine curve
+const SLIDE_WIDTH = 280;
+const SLIDE_HEIGHT = 380;
+const SLIDE_GAP = 140;
+const ARC_DEPTH = 180;
+const CENTER_LIFT = 90;
+const SCROLL_LERP = 0.06;
 
-// Build slides list matching original 8-9 count
 const SLIDES = [...EXECUTIVES, ...EXECUTIVES];
 const SLIDE_COUNT = SLIDES.length;
 
@@ -55,11 +54,10 @@ export default function ExecutivesSection() {
 
     const trackWidth = SLIDE_COUNT * SLIDE_GAP;
     let windowWidth = container.clientWidth || window.innerWidth;
-    let windowHeight = container.clientHeight || 520;
+    let windowHeight = container.clientHeight || 600;
     let windowCenterX = windowWidth / 2;
-    let arcBaselineY = windowHeight * 0.45;
+    let arcBaselineY = windowHeight * 0.46;
 
-    // Exact mathematical formula from CODE.zip
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
         (((slideIndex * SLIDE_GAP - scrollOffset) % trackWidth) + trackWidth) %
@@ -71,7 +69,8 @@ export default function ExecutivesSection() {
         (slideCenterX - windowCenterX) / (windowWidth * 0.5);
       const absDist = Math.min(Math.abs(normalizedDist), 1.3);
 
-      const scaleFactor = Math.max(1 - absDist * 0.8, 0.25);
+      // Gentler dropoff (0.55 instead of 0.8) so side images stay substantial & clear
+      const scaleFactor = Math.max(1 - absDist * 0.55, 0.45);
       const scaledWidth = SLIDE_WIDTH * scaleFactor;
       const scaledHeight = SLIDE_HEIGHT * scaleFactor;
 
@@ -123,7 +122,7 @@ export default function ExecutivesSection() {
 
     const onWheel = (e) => {
       e.preventDefault();
-      scrollTargetRef.current += e.deltaY * 0.5;
+      scrollTargetRef.current += e.deltaY * 0.6;
     };
 
     let touchStartX = 0;
@@ -134,7 +133,7 @@ export default function ExecutivesSection() {
     const onTouchMove = (e) => {
       e.preventDefault();
       const touchCurrentX = e.touches[0].clientX;
-      scrollTargetRef.current += (touchStartX - touchCurrentX) * 1.2;
+      scrollTargetRef.current += (touchStartX - touchCurrentX) * 1.3;
       touchStartX = touchCurrentX;
     };
 
@@ -157,9 +156,9 @@ export default function ExecutivesSection() {
 
     const onResize = () => {
       windowWidth = container.clientWidth || window.innerWidth;
-      windowHeight = container.clientHeight || 520;
+      windowHeight = container.clientHeight || 600;
       windowCenterX = windowWidth / 2;
-      arcBaselineY = windowHeight * 0.45;
+      arcBaselineY = windowHeight * 0.46;
     };
 
     window.addEventListener('resize', onResize);
@@ -230,16 +229,16 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* 3D Arc Stage (Exact Codegrid Voku Slider Implementation) */}
+        {/* 3D Arc Stage (Expanded height & card dimensions for larger portraits) */}
         <div
           ref={containerRef}
-          className="relative w-full h-[460px] sm:h-[500px] lg:h-[520px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[540px] sm:h-[580px] lg:h-[620px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
               key={idx}
               ref={(el) => (slidesRef.current[idx] = el)}
-              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.65)] will-change-transform bg-black"
+              className="absolute top-0 left-0 rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.7)] will-change-transform bg-black border border-white/20"
               style={{
                 width: `${SLIDE_WIDTH}px`,
                 height: `${SLIDE_HEIGHT}px`,
@@ -249,19 +248,19 @@ export default function ExecutivesSection() {
                 src={exec.image}
                 alt={exec.name}
                 fill
-                sizes="240px"
+                sizes="340px"
                 className="object-cover object-top pointer-events-none"
                 priority={idx < 4}
               />
             </div>
           ))}
 
-          {/* Exact Slide-Title element from CODE.zip Slider */}
+          {/* Slide-Title element from CODE.zip positioned cleanly with the larger cards */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
-            <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase mb-1">
+            <span className="text-xs sm:text-sm font-bold text-[#05b0f0] tracking-widest uppercase mb-1 drop-shadow-sm">
               {activeTitle.role}
             </span>
-            <h3 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-3xl text-white tracking-tight drop-shadow-md">
+            <h3 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight drop-shadow-md">
               {activeTitle.name}
             </h3>
           </div>
