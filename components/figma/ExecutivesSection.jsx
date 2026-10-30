@@ -64,7 +64,7 @@ export default function ExecutivesSection() {
 
   const scrollTargetRef = useRef(0);
   const scrollCurrentRef = useRef(0);
-  const slideGapRef = useRef(100);
+  const slideGapRef = useRef(125);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -74,20 +74,21 @@ export default function ExecutivesSection() {
     let containerWidth = container.clientWidth || window.innerWidth;
     let isMobile = containerWidth < 768;
 
-    // Original Codegrid Voku values:
-    // SLIDE_WIDTH = 200, SLIDE_HEIGHT = 275, SLIDE_GAP = 100, ARC_DEPTH = 200, CENTER_LIFT = 100
-    let slideWidth = isMobile ? Math.min(containerWidth * 0.48, 185) : 200;
-    let slideHeight = isMobile ? slideWidth * 1.375 : 275;
-    let slideGap = isMobile ? 85 : 100;
+    // Increased card dimensions while preserving the exact Codegrid Voku cosine physics & proportions:
+    // Desktop: 250px x 344px (was 200x275)
+    // Mobile: ~210px x 289px (was 185x254)
+    let slideWidth = isMobile ? Math.min(containerWidth * 0.55, 215) : 250;
+    let slideHeight = isMobile ? slideWidth * 1.375 : 344;
+    let slideGap = isMobile ? 100 : 125;
     slideGapRef.current = slideGap;
 
-    let arcDepth = isMobile ? 150 : 200;
-    let centerLift = isMobile ? 75 : 100;
+    let arcDepth = isMobile ? 160 : 210;
+    let centerLift = isMobile ? 80 : 105;
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    // Stage height is 440px / 460px; center arc around the middle
-    let arcBaselineY = isMobile ? 210 : 220;
+    // Stage baseline calibrated so cards arc naturally and stay clear of text
+    let arcBaselineY = isMobile ? 220 : 240;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -216,17 +217,17 @@ export default function ExecutivesSection() {
       containerWidth = container.clientWidth || window.innerWidth;
       isMobile = containerWidth < 768;
 
-      slideWidth = isMobile ? Math.min(containerWidth * 0.48, 185) : 200;
-      slideHeight = isMobile ? slideWidth * 1.375 : 275;
-      slideGap = isMobile ? 85 : 100;
+      slideWidth = isMobile ? Math.min(containerWidth * 0.55, 215) : 250;
+      slideHeight = isMobile ? slideWidth * 1.375 : 344;
+      slideGap = isMobile ? 100 : 125;
       slideGapRef.current = slideGap;
 
-      arcDepth = isMobile ? 150 : 200;
-      centerLift = isMobile ? 75 : 100;
+      arcDepth = isMobile ? 160 : 210;
+      centerLift = isMobile ? 80 : 105;
 
       trackWidth = SLIDE_COUNT * slideGap;
       windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? 210 : 220;
+      arcBaselineY = isMobile ? 220 : 240;
     };
 
     window.addEventListener('resize', onResize);
@@ -300,10 +301,10 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* 3D Arc Stage (Height: 390px mobile, 450px desktop) */}
+        {/* 3D Arc Stage (Height: 410px mobile, 490px desktop) */}
         <div
           ref={containerRef}
-          className="relative w-full h-[390px] sm:h-[440px] lg:h-[460px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[410px] sm:h-[470px] lg:h-[490px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
@@ -315,7 +316,7 @@ export default function ExecutivesSection() {
                 src={exec.image}
                 alt={exec.name}
                 fill
-                sizes="(max-width: 768px) 230px, 280px"
+                sizes="(max-width: 768px) 250px, 320px"
                 className="object-cover object-top pointer-events-none rounded-none"
                 priority={idx < 4}
               />
