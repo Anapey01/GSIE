@@ -52,13 +52,13 @@ export default function ExecutivesSection() {
     let slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
     let slideHeight = isMobile ? slideWidth * 1.35 : 340;
     let slideGap = isMobile ? slideWidth * 0.64 : 165;
-    let arcDepth = isMobile ? 45 : 85;
-    let centerLift = isMobile ? 30 : 55;
+    let arcDepth = isMobile ? 40 : 80;
+    let centerLift = isMobile ? 25 : 50;
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    // Keeps the card arc well elevated above the bottom clearance
-    let arcBaselineY = isMobile ? 135 : 180;
+    // Positioned so the bottom of the center card rests right above the name
+    let arcBaselineY = isMobile ? 120 : 160;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -192,12 +192,12 @@ export default function ExecutivesSection() {
       slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
       slideHeight = isMobile ? slideWidth * 1.35 : 340;
       slideGap = isMobile ? slideWidth * 0.64 : 165;
-      arcDepth = isMobile ? 45 : 85;
-      centerLift = isMobile ? 30 : 55;
+      arcDepth = isMobile ? 40 : 80;
+      centerLift = isMobile ? 25 : 50;
 
       trackWidth = SLIDE_COUNT * slideGap;
       windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? 135 : 180;
+      arcBaselineY = isMobile ? 120 : 160;
     };
 
     window.addEventListener('resize', onResize);
@@ -237,7 +237,7 @@ export default function ExecutivesSection() {
       {/* Background Ambience */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#05b0f0]/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-6 sm:gap-10 relative z-10">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-6 relative z-10">
         
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
@@ -277,10 +277,10 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* 3D Arc Stage (Cards Only) */}
+        {/* 3D Arc Stage (Tightened height so photo lands right above text) */}
         <div
           ref={containerRef}
-          className="relative w-full h-[320px] sm:h-[400px] lg:h-[430px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[245px] sm:h-[305px] lg:h-[335px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
@@ -300,8 +300,8 @@ export default function ExecutivesSection() {
           ))}
         </div>
 
-        {/* Minimalist Name & Role Placed Well Down Below All Cards (Zero Overlap) */}
-        <div className="w-full flex flex-col items-center text-center pt-6 sm:pt-8 pointer-events-none">
+        {/* Minimalist Name & Role Placed Directly Close Below Center Card */}
+        <div className="w-full flex flex-col items-center text-center pt-2 sm:pt-3 pointer-events-none">
           <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase mb-1">
             {currentExec.role}
           </span>
