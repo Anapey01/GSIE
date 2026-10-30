@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import gsap from 'gsap';
 
 const EXECUTIVES = [
@@ -32,6 +32,7 @@ const EXECUTIVES = [
   },
 ];
 
+// Replicate list to support continuous circular loop
 const SLIDES = [...EXECUTIVES, ...EXECUTIVES, ...EXECUTIVES];
 const SLIDE_COUNT = SLIDES.length;
 const SCROLL_LERP = 0.08;
@@ -39,7 +40,6 @@ const SCROLL_LERP = 0.08;
 export default function ExecutivesSection() {
   const containerRef = useRef(null);
   const slidesRef = useRef([]);
-  const [activeIndex, setActiveIndex] = useState(0);
 
   const scrollTargetRef = useRef(0);
   const scrollCurrentRef = useRef(0);
@@ -52,15 +52,16 @@ export default function ExecutivesSection() {
     let containerWidth = container.clientWidth || window.innerWidth;
     let isMobile = containerWidth < 768;
 
-    let slideWidth = isMobile ? 180 : 250;
-    let slideHeight = isMobile ? 240 : 340;
-    let slideGap = isMobile ? 100 : 150;
-    let arcDepth = isMobile ? 80 : 140;
-    let centerLift = isMobile ? 35 : 60;
+    // Strict responsive parameters based on real screen width
+    let slideWidth = isMobile ? Math.min(containerWidth * 0.52, 210) : 260;
+    let slideHeight = isMobile ? slideWidth * 1.38 : 360;
+    let slideGap = isMobile ? slideWidth * 0.58 : 155;
+    let arcDepth = isMobile ? 60 : 120;
+    let centerLift = isMobile ? 30 : 55;
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    let arcBaselineY = isMobile ? 140 : 185;
+    let arcBaselineY = isMobile ? slideHeight * 0.62 : slideHeight * 0.58;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -74,8 +75,8 @@ export default function ExecutivesSection() {
       const absDist = Math.min(Math.abs(normalizedDist), 1.3);
 
       const scaleFactor = Math.max(
-        1 - absDist * (isMobile ? 0.38 : 0.55),
-        isMobile ? 0.58 : 0.45
+        1 - absDist * (isMobile ? 0.35 : 0.5),
+        isMobile ? 0.65 : 0.48
       );
       const scaledWidth = slideWidth * scaleFactor;
       const scaledHeight = slideHeight * scaleFactor;
@@ -90,7 +91,6 @@ export default function ExecutivesSection() {
         width: scaledWidth,
         height: scaledHeight,
         zIndex: Math.round((1.5 - absDist) * 100),
-        distanceFromCenter: Math.abs(wrappedOffsetX),
       };
     }
 
@@ -111,28 +111,9 @@ export default function ExecutivesSection() {
       });
     }
 
-    let activeSlideIndex = -1;
-    function syncActiveSlide(scrollOffset) {
-      let closestIndex = 0;
-      let closestDist = Infinity;
-
-      slideElements.forEach((_, i) => {
-        const { distanceFromCenter } = computeSlideTransform(i, scrollOffset);
-        if (distanceFromCenter < closestDist) {
-          closestDist = distanceFromCenter;
-          closestIndex = i;
-        }
-      });
-
-      if (closestIndex !== activeSlideIndex) {
-        activeSlideIndex = closestIndex;
-        setActiveIndex(closestIndex % EXECUTIVES.length);
-      }
-    }
-
     const onWheel = (e) => {
       const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      if (Math.abs(delta) > 4) {
+      if (Math.abs(delta) > 3) {
         scrollTargetRef.current += delta * 0.8;
       }
     };
@@ -180,7 +161,6 @@ export default function ExecutivesSection() {
         (scrollTargetRef.current - scrollCurrentRef.current) * SCROLL_LERP;
 
       layoutSlides(scrollCurrentRef.current);
-      syncActiveSlide(scrollCurrentRef.current);
 
       rafId = requestAnimationFrame(animate);
     }
@@ -191,15 +171,15 @@ export default function ExecutivesSection() {
       containerWidth = container.clientWidth || window.innerWidth;
       isMobile = containerWidth < 768;
 
-      slideWidth = isMobile ? 180 : 250;
-      slideHeight = isMobile ? 240 : 340;
-      slideGap = isMobile ? 100 : 150;
-      arcDepth = isMobile ? 80 : 140;
-      centerLift = isMobile ? 35 : 60;
+      slideWidth = isMobile ? Math.min(containerWidth * 0.52, 210) : 260;
+      slideHeight = isMobile ? slideWidth * 1.38 : 360;
+      slideGap = isMobile ? slideWidth * 0.58 : 155;
+      arcDepth = isMobile ? 60 : 120;
+      centerLift = isMobile ? 30 : 55;
 
       trackWidth = SLIDE_COUNT * slideGap;
       windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? 140 : 185;
+      arcBaselineY = isMobile ? slideHeight * 0.62 : slideHeight * 0.58;
     };
 
     window.addEventListener('resize', onResize);
@@ -216,25 +196,17 @@ export default function ExecutivesSection() {
     };
   }, []);
 
-  const selectExec = (idx) => {
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const gap = isMobile ? 100 : 150;
-    const diff = (idx - activeIndex + EXECUTIVES.length) % EXECUTIVES.length;
-    const step = diff > EXECUTIVES.length / 2 ? diff - EXECUTIVES.length : diff;
-    scrollTargetRef.current += step * gap;
-  };
-
   const slidePrev = () => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    scrollTargetRef.current -= isMobile ? 100 : 150;
+    const gap = isMobile ? 110 : 155;
+    scrollTargetRef.current -= gap;
   };
 
   const slideNext = () => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    scrollTargetRef.current += isMobile ? 100 : 150;
+    const gap = isMobile ? 110 : 155;
+    scrollTargetRef.current += gap;
   };
-
-  const currentExec = EXECUTIVES[activeIndex] || EXECUTIVES[0];
 
   return (
     <section
@@ -244,9 +216,8 @@ export default function ExecutivesSection() {
     >
       {/* Background Ambience */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#05b0f0]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#001640] rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-6 sm:gap-8 relative z-10">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-6 sm:gap-10 relative z-10">
         
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
@@ -263,7 +234,7 @@ export default function ExecutivesSection() {
             </h2>
 
             <p className="font-sans text-sm sm:text-base text-[#c6d5ed] leading-relaxed">
-              Drag or swipe the gallery, or click any leader below to focus.
+              Drag or swipe to explore our leadership team.
             </p>
           </div>
 
@@ -286,72 +257,44 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* 3D Arc Stage (Pure clean photo slides with zero obstruction) */}
+        {/* 3D Arc Stage with Perpendicular Minimalist Typography */}
         <div
           ref={containerRef}
-          className="relative w-full h-[300px] sm:h-[390px] lg:h-[430px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[370px] sm:h-[440px] lg:h-[480px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
               key={idx}
               ref={(el) => (slidesRef.current[idx] = el)}
-              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.6)] border border-white/20 will-change-transform bg-[#001640]"
+              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.65)] will-change-transform bg-black group"
             >
-              <Image
-                src={exec.image}
-                alt={exec.name}
-                fill
-                sizes="(max-width: 768px) 200px, 320px"
-                className="object-cover object-top pointer-events-none"
-                priority={idx < 4}
-              />
+              {/* Photo */}
+              <div className="relative w-full h-full">
+                <Image
+                  src={exec.image}
+                  alt={exec.name}
+                  fill
+                  sizes="(max-width: 768px) 210px, 280px"
+                  className="object-cover object-top pointer-events-none"
+                  priority={idx < 4}
+                />
+
+                {/* Perpendicular / Vertical Minimalist Name Spine (Left Edge) */}
+                <div className="absolute top-0 left-0 bottom-0 w-8 sm:w-10 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col justify-end p-2 sm:p-3 pointer-events-none z-10">
+                  <div
+                    className="origin-bottom-left -rotate-90 whitespace-nowrap translate-x-4 sm:translate-x-5 text-[11px] sm:text-[13px] font-bold text-white tracking-widest uppercase opacity-90 drop-shadow-md"
+                    style={{ transformOrigin: '0 100%' }}
+                  >
+                    <span className="text-[#05b0f0] mr-2">[{exec.role}]</span>
+                    <span>{exec.name}</span>
+                  </div>
+                </div>
+
+                {/* Subtle bottom gradient to ground the portrait */}
+                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
+              </div>
             </div>
           ))}
-        </div>
-
-        {/* Redesigned Executive Spotlight Card (Modern Executive Badge Architecture) */}
-        <div className="w-full max-w-[680px] mx-auto bg-gradient-to-b from-[#01256d] to-[#001847] border border-white/15 rounded-2xl p-6 sm:p-7 shadow-[0_20px_50px_-10px_rgba(0,10,40,0.5)] flex flex-col items-center text-center relative overflow-hidden backdrop-blur-md">
-          {/* Subtle Top Ambient Glow Accent */}
-          <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-24 bg-[#05b0f0]/30 rounded-full blur-2xl pointer-events-none" />
-
-          {/* Active Role Pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#05b0f0]/15 border border-[#05b0f0]/30 mb-3 shadow-inner">
-            <span className="w-2 h-2 rounded-full bg-[#05b0f0] animate-pulse" />
-            <span className="text-xs font-bold text-[#05b0f0] tracking-widest uppercase">
-              {currentExec.role}
-            </span>
-          </div>
-
-          {/* Active Name */}
-          <h3 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-[34px] text-white tracking-tight leading-snug">
-            {currentExec.name}
-          </h3>
-
-          {/* Discipline / Assignment */}
-          <p className="font-sans text-sm sm:text-base text-[#c6d5ed] mt-1.5 font-medium">
-            {currentExec.discipline} · GhIE AAMUSTED Chapter
-          </p>
-
-          {/* Quick Council Selector Tabs */}
-          <div className="mt-6 pt-5 border-t border-white/10 w-full flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
-            {EXECUTIVES.map((exec, idx) => {
-              const active = idx === activeIndex;
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => selectExec(idx)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                    active
-                      ? 'bg-[#05b0f0] text-[#001e5a] shadow-md font-bold scale-105'
-                      : 'bg-white/5 text-[#c6d5ed] hover:bg-white/15 hover:text-white'
-                  }`}
-                >
-                  {exec.role}
-                </button>
-              );
-            })}
-          </div>
         </div>
 
       </div>
