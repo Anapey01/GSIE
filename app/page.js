@@ -8,7 +8,7 @@ import NewsSection from '@/components/figma/NewsSection';
 import EventsCalendarSection from '@/components/figma/EventsCalendarSection';
 import MembershipCTA from '@/components/figma/MembershipCTA';
 import FooterSection from '@/components/figma/FooterSection';
-import ClockStorySection from '@/components/ClockStorySection';
+
 import PortalModal from '@/components/PortalModal';
 import Preloader from '@/components/Preloader';
 import RevealObserver from '@/components/RevealObserver';
@@ -30,10 +30,7 @@ export default function Home() {
         <HeroSection onOpenPortal={() => setIsPortalOpen(true)} />
 
         {/* 3. Student Executives (Section intro + 4 executive cards) */}
-        <ClockStorySection />
-
-        {/* 3. Student Executives */}
-        <ExecutivesSection />
+                <ExecutivesSection />
 
         {/* 4. News and Stories (Section intro + 3 story cards) */}
         <NewsSection />
