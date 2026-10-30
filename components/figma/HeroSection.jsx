@@ -473,15 +473,6 @@ export default function HeroSection({ onOpenPortal }) {
 
         </div>
 
-        {/* Bottom Interactive Hint Bar */}
-        <div className="relative z-20 w-full border-t border-white/10 bg-black/25 backdrop-blur-md px-6 sm:px-12 lg:px-20 py-3.5 flex items-center justify-between text-xs font-mono text-[#c6d5ed]/80 pointer-events-none">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#05b0f0]" />
-            <span>INTERACTIVE TRAIL ACTIVE</span>
-          </div>
-          <span className="hidden sm:inline">MOVE CURSOR OR SWIPE SCREEN</span>
-        </div>
-
       </div>
 
       {/* 2. Community Pillars (Preserved) */}
