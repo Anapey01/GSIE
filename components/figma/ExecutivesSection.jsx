@@ -64,7 +64,7 @@ export default function ExecutivesSection() {
 
   const scrollTargetRef = useRef(0);
   const scrollCurrentRef = useRef(0);
-  const slideGapRef = useRef(140);
+  const slideGapRef = useRef(100);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -74,20 +74,20 @@ export default function ExecutivesSection() {
     let containerWidth = container.clientWidth || window.innerWidth;
     let isMobile = containerWidth < 768;
 
-    // Proportions matching Codegrid Voku cosine slider
-    // In original Voku: WIDTH 200, HEIGHT 275, GAP 100, ARC 200, LIFT 100
-    // Scaled up slightly for modern crisp view:
-    let slideWidth = isMobile ? Math.min(containerWidth * 0.52, 210) : 230;
-    let slideHeight = isMobile ? slideWidth * 1.38 : 315;
-    let slideGap = isMobile ? 120 : 140;
+    // Original Codegrid Voku values:
+    // SLIDE_WIDTH = 200, SLIDE_HEIGHT = 275, SLIDE_GAP = 100, ARC_DEPTH = 200, CENTER_LIFT = 100
+    let slideWidth = isMobile ? Math.min(containerWidth * 0.48, 185) : 200;
+    let slideHeight = isMobile ? slideWidth * 1.375 : 275;
+    let slideGap = isMobile ? 85 : 100;
     slideGapRef.current = slideGap;
 
-    let arcDepth = isMobile ? 120 : 170;
-    let centerLift = isMobile ? 60 : 85;
+    let arcDepth = isMobile ? 150 : 200;
+    let centerLift = isMobile ? 75 : 100;
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    let arcBaselineY = isMobile ? slideHeight * 0.54 : slideHeight * 0.52;
+    // Stage height is 440px / 460px; center arc around the middle
+    let arcBaselineY = isMobile ? 210 : 220;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -96,20 +96,19 @@ export default function ExecutivesSection() {
       if (wrappedOffsetX > trackWidth / 2) wrappedOffsetX -= trackWidth;
 
       const slideCenterX = windowCenterX + wrappedOffsetX;
-      // Normalized distance from center (0 = center, 1 = edges)
       const normalizedDist =
         (slideCenterX - windowCenterX) / (containerWidth * 0.5);
       const absDist = Math.min(Math.abs(normalizedDist), 1.3);
 
-      // True cosine drop and scale taper from original Codegrid Voku:
-      // scale drops smoothly away from center
-      const scaleFactor = Math.max(1 - absDist * 0.65, isMobile ? 0.38 : 0.32);
+      // Exact Voku scale equation: Math.max(1 - absDist * 0.8, 0.25)
+      const scaleFactor = Math.max(1 - absDist * 0.8, 0.25);
       const scaledWidth = slideWidth * scaleFactor;
       const scaledHeight = slideHeight * scaleFactor;
 
       const clampedDist = Math.min(absDist, 1);
-      // Cosine drop curve: (1 - cos(x * pi)) * 0.5
+      // Exact Voku cosine arc drop: (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * ARC_DEPTH
       const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * arcDepth;
+      // Exact Voku center lift: Math.max(1 - absDist * 2, 0) * CENTER_LIFT
       const centerLiftY = Math.max(1 - absDist * 2, 0) * centerLift;
 
       return {
@@ -117,7 +116,7 @@ export default function ExecutivesSection() {
         y: arcBaselineY - scaledHeight / 2 + arcDropY - centerLiftY,
         width: scaledWidth,
         height: scaledHeight,
-        zIndex: Math.round((1.5 - absDist) * 100),
+        zIndex: Math.round((1 - absDist) * 100),
         distanceFromCenter: Math.abs(wrappedOffsetX),
       };
     }
@@ -154,10 +153,11 @@ export default function ExecutivesSection() {
       }
     }
 
+    // Exact Voku scroll multiplier: e.deltaY * 0.5
     const onWheel = (e) => {
       const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      if (Math.abs(delta) > 3) {
-        scrollTargetRef.current += delta * 0.6;
+      if (Math.abs(delta) > 1) {
+        scrollTargetRef.current += delta * 0.5;
       }
     };
 
@@ -172,7 +172,7 @@ export default function ExecutivesSection() {
     const onMouseMove = (e) => {
       if (!isDragging) return;
       const diff = dragStartX - e.clientX;
-      scrollTargetRef.current += diff * 1.3;
+      scrollTargetRef.current += diff * 1.2;
       dragStartX = e.clientX;
     };
 
@@ -187,7 +187,8 @@ export default function ExecutivesSection() {
 
     const onTouchMove = (e) => {
       const touchCurrentX = e.touches[0].clientX;
-      scrollTargetRef.current += (touchStartX - touchCurrentX) * 1.4;
+      // Exact Voku touch delta multiplier: 1.2
+      scrollTargetRef.current += (touchStartX - touchCurrentX) * 1.2;
       touchStartX = touchCurrentX;
     };
 
@@ -215,17 +216,17 @@ export default function ExecutivesSection() {
       containerWidth = container.clientWidth || window.innerWidth;
       isMobile = containerWidth < 768;
 
-      slideWidth = isMobile ? Math.min(containerWidth * 0.52, 210) : 230;
-      slideHeight = isMobile ? slideWidth * 1.38 : 315;
-      slideGap = isMobile ? 120 : 140;
+      slideWidth = isMobile ? Math.min(containerWidth * 0.48, 185) : 200;
+      slideHeight = isMobile ? slideWidth * 1.375 : 275;
+      slideGap = isMobile ? 85 : 100;
       slideGapRef.current = slideGap;
 
-      arcDepth = isMobile ? 120 : 170;
-      centerLift = isMobile ? 60 : 85;
+      arcDepth = isMobile ? 150 : 200;
+      centerLift = isMobile ? 75 : 100;
 
       trackWidth = SLIDE_COUNT * slideGap;
       windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? slideHeight * 0.54 : slideHeight * 0.52;
+      arcBaselineY = isMobile ? 210 : 220;
     };
 
     window.addEventListener('resize', onResize);
