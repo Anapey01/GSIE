@@ -241,9 +241,6 @@ export default function HeroSection({ onOpenPortal }) {
         imagesList = imagesList.filter((item) => item !== this);
       }
     }
-        imagesList = imagesList.filter((item) => item !== this);
-      }
-    }
 
     let imagesList = [];
     let imageIndex = 0;
