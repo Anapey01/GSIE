@@ -28,12 +28,12 @@ const EXECUTIVES = [
   },
 ];
 
-// Larger, more heroic card sizing while preserving the cosine curve
-const SLIDE_WIDTH = 280;
+// Flatter, elegant arc configuration
+const SLIDE_WIDTH = 290;
 const SLIDE_HEIGHT = 380;
-const SLIDE_GAP = 140;
-const ARC_DEPTH = 180;
-const CENTER_LIFT = 90;
+const SLIDE_GAP = 180;
+const ARC_DEPTH = 50;     // Drastically reduced steepness (was 180-200)
+const CENTER_LIFT = 35;   // Gentle subtle lift (was 90-100)
 const SCROLL_LERP = 0.06;
 
 const SLIDES = [...EXECUTIVES, ...EXECUTIVES];
@@ -54,9 +54,9 @@ export default function ExecutivesSection() {
 
     const trackWidth = SLIDE_COUNT * SLIDE_GAP;
     let windowWidth = container.clientWidth || window.innerWidth;
-    let windowHeight = container.clientHeight || 600;
+    let windowHeight = container.clientHeight || 560;
     let windowCenterX = windowWidth / 2;
-    let arcBaselineY = windowHeight * 0.46;
+    let arcBaselineY = windowHeight * 0.45;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -69,12 +69,13 @@ export default function ExecutivesSection() {
         (slideCenterX - windowCenterX) / (windowWidth * 0.5);
       const absDist = Math.min(Math.abs(normalizedDist), 1.3);
 
-      // Gentler dropoff (0.55 instead of 0.8) so side images stay substantial & clear
-      const scaleFactor = Math.max(1 - absDist * 0.55, 0.45);
+      // Flatter, subtle scale drop-off (0.32) so side cards maintain full stature
+      const scaleFactor = Math.max(1 - absDist * 0.32, 0.68);
       const scaledWidth = SLIDE_WIDTH * scaleFactor;
       const scaledHeight = SLIDE_HEIGHT * scaleFactor;
 
       const clampedDist = Math.min(absDist, 1);
+      // Gentle flat arc formula
       const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * ARC_DEPTH;
       const centerLiftY = Math.max(1 - absDist * 2, 0) * CENTER_LIFT;
 
@@ -156,9 +157,9 @@ export default function ExecutivesSection() {
 
     const onResize = () => {
       windowWidth = container.clientWidth || window.innerWidth;
-      windowHeight = container.clientHeight || 600;
+      windowHeight = container.clientHeight || 560;
       windowCenterX = windowWidth / 2;
-      arcBaselineY = windowHeight * 0.46;
+      arcBaselineY = windowHeight * 0.45;
     };
 
     window.addEventListener('resize', onResize);
@@ -229,10 +230,10 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* 3D Arc Stage (Expanded height & card dimensions for larger portraits) */}
+        {/* Flatter Arc Stage */}
         <div
           ref={containerRef}
-          className="relative w-full h-[540px] sm:h-[580px] lg:h-[620px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[520px] sm:h-[550px] lg:h-[570px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
@@ -255,8 +256,8 @@ export default function ExecutivesSection() {
             </div>
           ))}
 
-          {/* Slide-Title element from CODE.zip positioned cleanly with the larger cards */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
+          {/* Centered Title */}
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
             <span className="text-xs sm:text-sm font-bold text-[#05b0f0] tracking-widest uppercase mb-1 drop-shadow-sm">
               {activeTitle.role}
             </span>
