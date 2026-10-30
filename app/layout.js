@@ -1,12 +1,19 @@
 import './globals.css';
-import { IBM_Plex_Sans } from 'next/font/google';
+import { Playfair_Display, Crimson_Pro } from 'next/font/google';
 import GsapProvider from '@/components/animations/GsapProvider';
 
-const ibmPlexSans = IBM_Plex_Sans({
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+  variable: '--font-playfair',
+});
+
+const crimsonPro = Crimson_Pro({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
-  variable: '--font-ibm-plex-sans',
+  variable: '--font-crimson',
 });
 
 export const metadata = {
@@ -16,7 +23,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning className={ibmPlexSans.variable}>
+    <html lang="en" suppressHydrationWarning className={`${playfairDisplay.variable} ${crimsonPro.variable}`}>
       <body suppressHydrationWarning className="antialiased bg-white text-slate-900 selection:bg-[#05b0f0] selection:text-[#001e5a] font-sans">
         <GsapProvider>
           {children}
