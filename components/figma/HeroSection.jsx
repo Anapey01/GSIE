@@ -420,7 +420,7 @@ export default function HeroSection({ onOpenPortal }) {
       {/* 1. Interactive 24/7 Artists Hero Stage */}
       <div
         ref={containerRef}
-        className="relative w-full min-h-[620px] sm:min-h-[680px] lg:min-h-[740px] bg-[#001438] text-white overflow-hidden flex flex-col justify-between"
+        className="relative w-full min-h-[500px] sm:min-h-[540px] lg:min-h-[580px] bg-[#001438] text-white overflow-hidden flex flex-col justify-center"
       >
         {/* HTML5 Canvas Image Trail & Concentric Arc Grid */}
         <canvas
@@ -433,7 +433,7 @@ export default function HeroSection({ onOpenPortal }) {
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#001e5a]/80 rounded-full blur-3xl pointer-events-none" />
 
         {/* Hero Content Overlay */}
-        <div className="relative z-20 max-w-[1440px] w-full mx-auto px-6 sm:px-12 lg:px-20 pt-16 sm:pt-20 pb-12 flex flex-col justify-center flex-grow pointer-events-none">
+        <div className="relative z-20 max-w-[1440px] w-full mx-auto px-6 sm:px-12 lg:px-20 py-12 sm:py-16 flex flex-col justify-center flex-grow pointer-events-none">
           
           <div className="max-w-[850px] flex flex-col gap-6">
             {/* Giant Editorial Headline (24/7 Artists Style) */}
