@@ -90,11 +90,18 @@ export default function HeroSection({ onOpenPortal }) {
     };
     setCircles();
 
+    // Preload all trail images so they draw immediately
+    const preloadedImages = [];
+    HERO_TRAIL_IMAGES.forEach((src) => {
+      const img = new window.Image();
+      img.src = src;
+      preloadedImages.push(img);
+    });
+
     // Sliced Image Trail class (horizontal Venetian strips)
     class TrailSliceItem {
-      constructor(src, x, y, vx, vy, size) {
-        this.src = src;
-        this.slices = 10;
+      constructor(imgElement, x, y, vx, vy, size) {
+        this.slices = 8;
         this.corner = 2;
         this.x = x;
         this.y = y;
@@ -103,28 +110,28 @@ export default function HeroSection({ onOpenPortal }) {
         this.size = size;
         this.opacity = 1;
         this.visibility = 1;
-        this.isLoaded = false;
         this.clipPaths = [];
-        this.scrollY = scroll.sy;
+        this.image = imgElement;
+        this.isLoaded = false;
 
-        this.image = new window.Image();
-        this.image.src = this.src;
-        this.image.onload = () => {
+        if (this.image.complete && this.image.naturalWidth > 0) {
           this.init();
-        };
+        } else {
+          this.image.onload = () => this.init();
+        }
       }
 
       init() {
         this.aspectRatio = 1.15;
-        let imgW = this.image.width;
+        let imgW = this.image.naturalWidth || 400;
         let imgH = imgW / this.aspectRatio;
-        if (imgH > this.image.height) {
-          imgH = this.image.height;
+        if (imgH > (this.image.naturalHeight || 300)) {
+          imgH = this.image.naturalHeight || 300;
           imgW = imgH * this.aspectRatio;
         }
 
-        const sx = (this.image.width - imgW) / 2;
-        const sy = (this.image.height - imgH) / 2;
+        const sx = ((this.image.naturalWidth || 400) - imgW) / 2;
+        const sy = ((this.image.naturalHeight || 300) - imgH) / 2;
         this.sourceSize = { x: sx, y: sy, width: imgW, height: imgH };
 
         this.width = this.size;
@@ -146,44 +153,47 @@ export default function HeroSection({ onOpenPortal }) {
             0
           );
           const inset = this.clipPathSize * cornerOffset;
+          const targetW = this.destinationSize.width - inset;
           this.clipPaths.push({
             y: this.clipPathSize * s,
-            width: this.destinationSize.width - inset,
+            width: targetW,
             currentWidth: 0,
-            targetWidth: this.destinationSize.width - inset,
+            targetWidth: targetW,
           });
         }
 
-        // Venetian slice animation sequence via GSAP timeline
+        // Animate Venetian expansion and dissolution
         const tl = gsap.timeline({
           onComplete: () => {
             this.destroy();
           },
         });
 
-        tl.to(
-          this.clipPaths,
-          {
-            currentWidth: (idx) => this.clipPaths[idx].targetWidth,
-            duration: 0.7,
-            ease: 'power3.inOut',
-            stagger: { amount: 0.35, from: 'center' },
-          },
-          0
-        );
+        // Expand out from center
+        this.clipPaths.forEach((slice, idx) => {
+          const distFromCenter = Math.abs(idx - this.slices / 2) / (this.slices / 2);
+          const delay = distFromCenter * 0.15;
+          tl.to(
+            slice,
+            {
+              currentWidth: slice.targetWidth,
+              duration: 0.5,
+              ease: 'power3.out',
+            },
+            delay
+          );
+        });
 
+        // Fade & wipe out after holding
         tl.to(
-          this.clipPaths,
+          this,
           {
-            currentWidth: 0,
-            duration: 0.65,
-            ease: 'power3.inOut',
-            stagger: { amount: 0.25, from: 'center' },
+            opacity: 0,
+            duration: 0.5,
+            ease: 'power2.in',
           },
-          1.1
+          1.0
         );
-
-        tl.to(this, { opacity: 0, duration: 0.5, ease: 'linear' }, 1.3);
 
         this.isLoaded = true;
       }
@@ -192,8 +202,8 @@ export default function HeroSection({ onOpenPortal }) {
         if (!this.isLoaded) return;
         this.x += this.vx;
         this.y += this.vy;
-        this.vx *= 0.94;
-        this.vy *= 0.94;
+        this.vx *= 0.92;
+        this.vy *= 0.92;
 
         this.destinationSize.x = this.x - this.hWidth;
         this.destinationSize.y = this.y - this.hHeight;
@@ -207,7 +217,7 @@ export default function HeroSection({ onOpenPortal }) {
           const sliceX =
             this.destinationSize.x + (this.destinationSize.width - slice.currentWidth) / 2;
           const sliceY = this.destinationSize.y + slice.y;
-          ctx.rect(sliceX, sliceY, slice.currentWidth, this.clipPathSize + 0.5);
+          ctx.rect(sliceX, sliceY, Math.max(slice.currentWidth, 0), this.clipPathSize + 0.6);
         });
         ctx.closePath();
         ctx.clip();
@@ -228,6 +238,9 @@ export default function HeroSection({ onOpenPortal }) {
       }
 
       destroy() {
+        imagesList = imagesList.filter((item) => item !== this);
+      }
+    }
         imagesList = imagesList.filter((item) => item !== this);
       }
     }
@@ -262,11 +275,11 @@ export default function HeroSection({ onOpenPortal }) {
       }
 
       if (canEmit) {
-        const src = HERO_TRAIL_IMAGES[imageIndex % HERO_TRAIL_IMAGES.length];
-        const vx = isSleeping ? 2.5 : mouse.svx * 0.45;
-        const vy = isSleeping ? -2.5 : mouse.svy * 0.45;
+        const imgEl = preloadedImages[imageIndex % preloadedImages.length];
+        const vx = isSleeping ? 1.5 : mouse.svx * 0.45;
+        const vy = isSleeping ? -1.5 : mouse.svy * 0.45;
 
-        imagesList.push(new TrailSliceItem(src, posX, posY, vx, vy, itemSize));
+        imagesList.push(new TrailSliceItem(imgEl, posX, posY, vx, vy, itemSize));
         imageIndex++;
         lastEmit.x = posX;
         lastEmit.y = posY;
