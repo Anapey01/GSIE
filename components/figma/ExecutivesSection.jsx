@@ -39,7 +39,7 @@ export default function ExecutivesSection() {
 
   const scrollTargetRef = useRef(0);
   const scrollCurrentRef = useRef(0);
-  const slideGapRef = useRef(150);
+  const slideGapRef = useRef(180);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -49,20 +49,19 @@ export default function ExecutivesSection() {
     let containerWidth = container.clientWidth || window.innerWidth;
     let isMobile = containerWidth < 768;
 
-    // Strict responsive parameters based on real screen width
-    let slideWidth = isMobile ? Math.min(containerWidth * 0.46, 175) : 210;
-    let slideHeight = isMobile ? slideWidth * 1.34 : 280;
-    // Mobile slideGap needs to be proportional to screen so cards don't cluster on phone screens
-    let slideGap = isMobile ? Math.max(containerWidth * 0.42, 140) : 170;
+    // Substantially larger card proportions
+    let slideWidth = isMobile ? Math.min(containerWidth * 0.58, 230) : 260;
+    let slideHeight = isMobile ? slideWidth * 1.36 : 355;
+    let slideGap = isMobile ? slideWidth * 0.72 : 185;
     slideGapRef.current = slideGap;
 
-    let arcDepth = isMobile ? 20 : 35;
-    let centerLift = isMobile ? 12 : 22;
+    let arcDepth = isMobile ? 30 : 45;
+    let centerLift = isMobile ? 18 : 28;
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    // Keeps the center card well above the text so faces aren't clipped at the top
-    let arcBaselineY = isMobile ? slideHeight * 0.58 : slideHeight * 0.52;
+    // Balanced vertical center so image and bottom text feel connected
+    let arcBaselineY = isMobile ? slideHeight * 0.56 : slideHeight * 0.52;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -189,17 +188,17 @@ export default function ExecutivesSection() {
       containerWidth = container.clientWidth || window.innerWidth;
       isMobile = containerWidth < 768;
 
-      slideWidth = isMobile ? Math.min(containerWidth * 0.46, 175) : 210;
-      slideHeight = isMobile ? slideWidth * 1.34 : 280;
-      slideGap = isMobile ? Math.max(containerWidth * 0.42, 140) : 170;
+      slideWidth = isMobile ? Math.min(containerWidth * 0.58, 230) : 260;
+      slideHeight = isMobile ? slideWidth * 1.36 : 355;
+      slideGap = isMobile ? slideWidth * 0.72 : 185;
       slideGapRef.current = slideGap;
 
-      arcDepth = isMobile ? 20 : 35;
-      centerLift = isMobile ? 12 : 22;
+      arcDepth = isMobile ? 30 : 45;
+      centerLift = isMobile ? 18 : 28;
 
       trackWidth = SLIDE_COUNT * slideGap;
       windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? slideHeight * 0.58 : slideHeight * 0.52;
+      arcBaselineY = isMobile ? slideHeight * 0.56 : slideHeight * 0.52;
     };
 
     window.addEventListener('resize', onResize);
@@ -228,12 +227,12 @@ export default function ExecutivesSection() {
     <section
       id="executives"
       data-reveal
-      className="relative w-full bg-[#001e5a] text-white py-10 sm:py-14 border-b border-white/10 overflow-hidden select-none"
+      className="relative w-full bg-[#001e5a] text-white py-12 sm:py-16 border-b border-white/10 overflow-hidden select-none"
     >
       {/* Background Ambience */}
-      <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-[#05b0f0]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#05b0f0]/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-4 relative z-10">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-20 flex flex-col gap-5 relative z-10">
         
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
@@ -245,7 +244,7 @@ export default function ExecutivesSection() {
               </span>
             </div>
 
-            <h2 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-[32px] text-white tracking-tight leading-tight">
+            <h2 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-[34px] text-white tracking-tight leading-tight">
               Meet the executive council.
             </h2>
 
@@ -255,52 +254,52 @@ export default function ExecutivesSection() {
           </div>
 
           {/* Navigation Controls */}
-          <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex items-center gap-2.5 self-start sm:self-auto">
             <button
               onClick={slidePrev}
               aria-label="Previous executive"
-              className="p-2 sm:p-2.5 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer"
+              className="p-2.5 sm:p-3 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer"
             >
-              <ChevronLeft className="w-4 h-4" strokeWidth={2.4} />
+              <ChevronLeft className="w-5 h-5" strokeWidth={2.4} />
             </button>
             <button
               onClick={slideNext}
               aria-label="Next executive"
-              className="p-2 sm:p-2.5 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer"
+              className="p-2.5 sm:p-3 rounded-full bg-white/10 hover:bg-[#05b0f0] hover:text-[#001e5a] text-white border border-white/20 transition-all shadow-md active:scale-95 cursor-pointer"
             >
-              <ChevronRight className="w-4 h-4" strokeWidth={2.4} />
+              <ChevronRight className="w-5 h-5" strokeWidth={2.4} />
             </button>
           </div>
         </div>
 
-        {/* 3D Arc Stage (Height: 330px mobile, 380px desktop) */}
+        {/* 3D Arc Stage (Height: 390px mobile, 450px desktop) */}
         <div
           ref={containerRef}
-          className="relative w-full h-[330px] sm:h-[370px] lg:h-[390px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[390px] sm:h-[440px] lg:h-[460px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
               key={idx}
               ref={(el) => (slidesRef.current[idx] = el)}
-              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_16px_32px_rgba(0,0,0,0.65)] will-change-transform bg-black border border-white/20"
+              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.65)] will-change-transform bg-black border border-white/20"
             >
               <Image
                 src={exec.image}
                 alt={exec.name}
                 fill
-                sizes="(max-width: 768px) 180px, 220px"
+                sizes="(max-width: 768px) 230px, 280px"
                 className="object-cover object-top pointer-events-none"
                 priority={idx < 4}
               />
             </div>
           ))}
 
-          {/* Centered Title */}
-          <div className="absolute bottom-1.5 sm:bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
-            <span className="text-[10px] sm:text-[11px] font-bold text-[#05b0f0] tracking-widest uppercase mb-0.5 drop-shadow-sm">
+          {/* Centered Title — Positioned closely right underneath the center card */}
+          <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
+            <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase mb-1 drop-shadow-sm">
               {activeTitle.role}
             </span>
-            <h3 className="font-heading font-extrabold text-lg sm:text-xl lg:text-2xl text-white tracking-tight drop-shadow-md truncate max-w-full">
+            <h3 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-3xl text-white tracking-tight drop-shadow-md truncate max-w-full">
               {activeTitle.name}
             </h3>
           </div>
