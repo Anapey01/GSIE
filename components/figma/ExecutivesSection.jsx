@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import gsap from 'gsap';
@@ -36,7 +36,7 @@ const SCROLL_LERP = 0.08;
 export default function ExecutivesSection() {
   const containerRef = useRef(null);
   const slidesRef = useRef([]);
-  const textRefs = useRef([]);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const scrollTargetRef = useRef(0);
   const scrollCurrentRef = useRef(0);
@@ -44,21 +44,21 @@ export default function ExecutivesSection() {
   useEffect(() => {
     const container = containerRef.current;
     const slideElements = slidesRef.current;
-    const textElements = textRefs.current;
     if (!container) return;
 
     let containerWidth = container.clientWidth || window.innerWidth;
     let isMobile = containerWidth < 768;
 
     let slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
-    let slideHeight = isMobile ? slideWidth * 1.55 : 380;
-    let slideGap = isMobile ? slideWidth * 0.62 : 160;
-    let arcDepth = isMobile ? 50 : 100;
-    let centerLift = isMobile ? 25 : 50;
+    let slideHeight = isMobile ? slideWidth * 1.35 : 340;
+    let slideGap = isMobile ? slideWidth * 0.64 : 165;
+    let arcDepth = isMobile ? 45 : 85;
+    let centerLift = isMobile ? 30 : 55;
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    let arcBaselineY = isMobile ? slideHeight * 0.52 : slideHeight * 0.50;
+    // Keeps the card arc well elevated above the bottom clearance
+    let arcBaselineY = isMobile ? 135 : 180;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -82,25 +82,23 @@ export default function ExecutivesSection() {
       const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * arcDepth;
       const centerLiftY = Math.max(1 - absDist * 2, 0) * centerLift;
 
-      // Text opacity: only visible when the card is in the center spotlight
-      const textOpacity = Math.max(1 - Math.abs(normalizedDist) * 3.5, 0);
-
       return {
         x: slideCenterX - scaledWidth / 2,
         y: arcBaselineY - scaledHeight / 2 + arcDropY - centerLiftY,
         width: scaledWidth,
         height: scaledHeight,
         zIndex: Math.round((1.5 - absDist) * 100),
-        textOpacity,
+        distanceFromCenter: Math.abs(wrappedOffsetX),
       };
     }
 
     function layoutSlides(scrollOffset) {
       slideElements.forEach((slideEl, i) => {
         if (!slideEl) return;
-        const { x, y, width, height, zIndex, textOpacity } =
-          computeSlideTransform(i, scrollOffset);
-
+        const { x, y, width, height, zIndex } = computeSlideTransform(
+          i,
+          scrollOffset
+        );
         gsap.set(slideEl, {
           x,
           y,
@@ -108,15 +106,26 @@ export default function ExecutivesSection() {
           height,
           zIndex,
         });
+      });
+    }
 
-        const textEl = textElements[i];
-        if (textEl) {
-          gsap.set(textEl, {
-            opacity: textOpacity,
-            y: (1 - textOpacity) * 8, // subtle 8px rise-in as it reaches center
-          });
+    let activeSlideIndex = -1;
+    function syncActiveSlide(scrollOffset) {
+      let closestIndex = 0;
+      let closestDist = Infinity;
+
+      slideElements.forEach((_, i) => {
+        const { distanceFromCenter } = computeSlideTransform(i, scrollOffset);
+        if (distanceFromCenter < closestDist) {
+          closestDist = distanceFromCenter;
+          closestIndex = i;
         }
       });
+
+      if (closestIndex !== activeSlideIndex) {
+        activeSlideIndex = closestIndex;
+        setActiveIndex(closestIndex % EXECUTIVES.length);
+      }
     }
 
     const onWheel = (e) => {
@@ -169,6 +178,7 @@ export default function ExecutivesSection() {
         (scrollTargetRef.current - scrollCurrentRef.current) * SCROLL_LERP;
 
       layoutSlides(scrollCurrentRef.current);
+      syncActiveSlide(scrollCurrentRef.current);
 
       rafId = requestAnimationFrame(animate);
     }
@@ -180,14 +190,14 @@ export default function ExecutivesSection() {
       isMobile = containerWidth < 768;
 
       slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
-      slideHeight = isMobile ? slideWidth * 1.55 : 380;
-      slideGap = isMobile ? slideWidth * 0.62 : 160;
-      arcDepth = isMobile ? 50 : 100;
-      centerLift = isMobile ? 25 : 50;
+      slideHeight = isMobile ? slideWidth * 1.35 : 340;
+      slideGap = isMobile ? slideWidth * 0.64 : 165;
+      arcDepth = isMobile ? 45 : 85;
+      centerLift = isMobile ? 30 : 55;
 
       trackWidth = SLIDE_COUNT * slideGap;
       windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? slideHeight * 0.52 : slideHeight * 0.50;
+      arcBaselineY = isMobile ? 135 : 180;
     };
 
     window.addEventListener('resize', onResize);
@@ -206,15 +216,17 @@ export default function ExecutivesSection() {
 
   const slidePrev = () => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const gap = isMobile ? 120 : 160;
+    const gap = isMobile ? 120 : 165;
     scrollTargetRef.current -= gap;
   };
 
   const slideNext = () => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const gap = isMobile ? 120 : 160;
+    const gap = isMobile ? 120 : 165;
     scrollTargetRef.current += gap;
   };
+
+  const currentExec = EXECUTIVES[activeIndex] || EXECUTIVES[0];
 
   return (
     <section
@@ -265,44 +277,37 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* 3D Arc Stage */}
+        {/* 3D Arc Stage (Cards Only) */}
         <div
           ref={containerRef}
-          className="relative w-full h-[400px] sm:h-[450px] lg:h-[490px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[320px] sm:h-[400px] lg:h-[430px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
               key={idx}
               ref={(el) => (slidesRef.current[idx] = el)}
-              className="absolute top-0 left-0 flex flex-col will-change-transform group"
+              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.65)] will-change-transform bg-black"
             >
-              {/* Photo Box */}
-              <div className="relative w-full flex-grow rounded-2xl overflow-hidden shadow-[0_18px_40px_rgba(0,0,0,0.6)] border border-white/20 bg-black">
-                <Image
-                  src={exec.image}
-                  alt={exec.name}
-                  fill
-                  sizes="(max-width: 768px) 215px, 280px"
-                  className="object-cover object-top pointer-events-none"
-                  priority={idx < 4}
-                />
-              </div>
-
-              {/* Minimalist Details Beneath Photo — ONLY visible for the active card in spotlight */}
-              <div
-                ref={(el) => (textRefs.current[idx] = el)}
-                className="pt-2 sm:pt-2.5 px-1 flex flex-col pointer-events-none transition-none"
-                style={{ opacity: 0 }}
-              >
-                <span className="text-[10px] sm:text-[11px] font-bold text-[#05b0f0] tracking-wider uppercase truncate">
-                  {exec.role}
-                </span>
-                <span className="text-[13px] sm:text-[15px] font-extrabold text-white tracking-tight leading-snug truncate drop-shadow-sm">
-                  {exec.name}
-                </span>
-              </div>
+              <Image
+                src={exec.image}
+                alt={exec.name}
+                fill
+                sizes="(max-width: 768px) 215px, 280px"
+                className="object-cover object-top pointer-events-none"
+                priority={idx < 4}
+              />
             </div>
           ))}
+        </div>
+
+        {/* Minimalist Name & Role Placed Well Down Below All Cards (Zero Overlap) */}
+        <div className="w-full flex flex-col items-center text-center pt-6 sm:pt-8 pointer-events-none">
+          <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase mb-1">
+            {currentExec.role}
+          </span>
+          <h3 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-3xl text-white tracking-tight">
+            {currentExec.name}
+          </h3>
         </div>
 
       </div>
