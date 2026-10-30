@@ -57,7 +57,6 @@ export default function ExecutivesSection() {
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    // Positioned so the bottom of the center card rests right above the name
     let arcBaselineY = isMobile ? 120 : 160;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
@@ -82,6 +81,11 @@ export default function ExecutivesSection() {
       const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * arcDepth;
       const centerLiftY = Math.max(1 - absDist * 2, 0) * centerLift;
 
+      // Only reveal adjacent cards when actively swapping:
+      // When at center (absDist ~ 0), opacity is 1.
+      // Outside swap threshold (absDist > 0.45), opacity fades smoothly to 0.
+      const opacity = Math.max(1 - Math.pow(absDist / 0.55, 3), 0);
+
       return {
         x: slideCenterX - scaledWidth / 2,
         y: arcBaselineY - scaledHeight / 2 + arcDropY - centerLiftY,
@@ -89,13 +93,14 @@ export default function ExecutivesSection() {
         height: scaledHeight,
         zIndex: Math.round((1.5 - absDist) * 100),
         distanceFromCenter: Math.abs(wrappedOffsetX),
+        opacity,
       };
     }
 
     function layoutSlides(scrollOffset) {
       slideElements.forEach((slideEl, i) => {
         if (!slideEl) return;
-        const { x, y, width, height, zIndex } = computeSlideTransform(
+        const { x, y, width, height, zIndex, opacity } = computeSlideTransform(
           i,
           scrollOffset
         );
@@ -105,6 +110,8 @@ export default function ExecutivesSection() {
           width,
           height,
           zIndex,
+          opacity,
+          visibility: opacity < 0.01 ? 'hidden' : 'visible',
         });
       });
     }
@@ -277,7 +284,7 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* 3D Arc Stage (Tightened height so photo lands right above text) */}
+        {/* 3D Arc Stage */}
         <div
           ref={containerRef}
           className="relative w-full h-[245px] sm:h-[305px] lg:h-[335px] overflow-hidden cursor-grab active:cursor-grabbing"
