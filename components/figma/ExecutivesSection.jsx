@@ -325,10 +325,10 @@ export default function ExecutivesSection() {
 
           {/* Centered Title — Positioned closely right underneath the center card */}
           <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center text-center z-40 pointer-events-none w-full px-4">
-            <span className="text-[11px] sm:text-xs font-bold text-[#05b0f0] tracking-widest uppercase mb-1 drop-shadow-sm">
+            <span className="text-[10px] sm:text-[11px] font-semibold text-[#05b0f0] tracking-wider uppercase mb-0.5">
               {activeTitle.role}
             </span>
-            <h3 className="font-heading font-extrabold text-xl sm:text-2xl lg:text-3xl text-white tracking-tight drop-shadow-md truncate max-w-full">
+            <h3 className="font-heading font-medium text-sm sm:text-base lg:text-lg text-white tracking-normal drop-shadow-sm truncate max-w-full">
               {activeTitle.name}
             </h3>
           </div>
