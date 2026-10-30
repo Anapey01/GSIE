@@ -436,15 +436,6 @@ export default function HeroSection({ onOpenPortal }) {
         <div className="relative z-20 max-w-[1440px] w-full mx-auto px-6 sm:px-12 lg:px-20 pt-16 sm:pt-20 pb-12 flex flex-col justify-center flex-grow pointer-events-none">
           
           <div className="max-w-[850px] flex flex-col gap-6">
-            
-            {/* Chapter overline badge */}
-            <div className="inline-flex items-center gap-2.5 self-start px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 pointer-events-auto">
-              <div className="w-2 h-2 rounded-full bg-[#05b0f0] animate-pulse" />
-              <span className="font-mono font-bold text-[11px] sm:text-xs text-[#c6d5ed] tracking-widest uppercase">
-                GHIE STUDENT CHAPTER · AAMUSTED
-              </span>
-            </div>
-
             {/* Giant Editorial Headline (24/7 Artists Style) */}
             <h1
               ref={titleRef}
