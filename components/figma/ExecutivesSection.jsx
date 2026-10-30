@@ -28,7 +28,6 @@ const EXECUTIVES = [
   },
 ];
 
-// Replicate list to support continuous circular loop
 const SLIDES = [...EXECUTIVES, ...EXECUTIVES, ...EXECUTIVES];
 const SLIDE_COUNT = SLIDES.length;
 const SCROLL_LERP = 0.08;
@@ -40,6 +39,7 @@ export default function ExecutivesSection() {
 
   const scrollTargetRef = useRef(0);
   const scrollCurrentRef = useRef(0);
+  const slideGapRef = useRef(165);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -52,6 +52,8 @@ export default function ExecutivesSection() {
     let slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
     let slideHeight = isMobile ? slideWidth * 1.35 : 340;
     let slideGap = isMobile ? slideWidth * 0.64 : 165;
+    slideGapRef.current = slideGap;
+
     let arcDepth = isMobile ? 40 : 80;
     let centerLift = isMobile ? 25 : 50;
 
@@ -81,10 +83,8 @@ export default function ExecutivesSection() {
       const arcDropY = (1 - Math.cos(clampedDist * Math.PI)) * 0.5 * arcDepth;
       const centerLiftY = Math.max(1 - absDist * 2, 0) * centerLift;
 
-      // Only reveal adjacent cards when actively swapping:
-      // When at center (absDist ~ 0), opacity is 1.
-      // Outside swap threshold (absDist > 0.45), opacity fades smoothly to 0.
-      const opacity = Math.max(1 - Math.pow(absDist / 0.55, 3), 0);
+      // Card opacity: Center card is fully visible (1), side cards are hidden until dragged/swapped
+      const opacity = Math.max(1 - Math.pow(absDist / 0.38, 2), 0);
 
       return {
         x: slideCenterX - scaledWidth / 2,
@@ -111,7 +111,7 @@ export default function ExecutivesSection() {
           height,
           zIndex,
           opacity,
-          visibility: opacity < 0.01 ? 'hidden' : 'visible',
+          visibility: opacity <= 0.001 ? 'hidden' : 'visible',
         });
       });
     }
@@ -199,6 +199,8 @@ export default function ExecutivesSection() {
       slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
       slideHeight = isMobile ? slideWidth * 1.35 : 340;
       slideGap = isMobile ? slideWidth * 0.64 : 165;
+      slideGapRef.current = slideGap;
+
       arcDepth = isMobile ? 40 : 80;
       centerLift = isMobile ? 25 : 50;
 
@@ -222,15 +224,11 @@ export default function ExecutivesSection() {
   }, []);
 
   const slidePrev = () => {
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const gap = isMobile ? 120 : 165;
-    scrollTargetRef.current -= gap;
+    scrollTargetRef.current -= slideGapRef.current;
   };
 
   const slideNext = () => {
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const gap = isMobile ? 120 : 165;
-    scrollTargetRef.current += gap;
+    scrollTargetRef.current += slideGapRef.current;
   };
 
   const currentExec = EXECUTIVES[activeIndex] || EXECUTIVES[0];
