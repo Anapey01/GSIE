@@ -9,25 +9,21 @@ const EXECUTIVES = [
   {
     role: 'President',
     name: 'Emmanuel Sarfo Kantanka',
-    discipline: 'Chapter Leadership',
     image: '/images/executives/emmanuel-sarfo-kantanka.jpg',
   },
   {
     role: 'Vice President',
     name: 'Lois Oforiwaa',
-    discipline: 'Executive Council',
     image: '/images/executives/lois-oforiwaa.jpg',
   },
   {
     role: 'General Secretary',
     name: 'Amos Kwasi Nyarko Boamah',
-    discipline: 'Secretariat & Records',
     image: '/images/executives/amos-kwasi-nyarko-boamah.jpg',
   },
   {
     role: 'Media Head',
     name: 'Elizabeth',
-    discipline: 'Media & Communications',
     image: '/images/executives/elizabeth.jpg',
   },
 ];
@@ -52,16 +48,17 @@ export default function ExecutivesSection() {
     let containerWidth = container.clientWidth || window.innerWidth;
     let isMobile = containerWidth < 768;
 
-    // Strict responsive parameters based on real screen width
-    let slideWidth = isMobile ? Math.min(containerWidth * 0.52, 210) : 260;
-    let slideHeight = isMobile ? slideWidth * 1.38 : 360;
-    let slideGap = isMobile ? slideWidth * 0.58 : 155;
-    let arcDepth = isMobile ? 60 : 120;
-    let centerLift = isMobile ? 30 : 55;
+    // Dimensions tuned so card holds image + neat text underneath
+    let slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
+    // Extra vertical height for the clean text beneath photo
+    let slideHeight = isMobile ? slideWidth * 1.55 : 380;
+    let slideGap = isMobile ? slideWidth * 0.62 : 160;
+    let arcDepth = isMobile ? 50 : 100;
+    let centerLift = isMobile ? 25 : 50;
 
     let trackWidth = SLIDE_COUNT * slideGap;
     let windowCenterX = containerWidth / 2;
-    let arcBaselineY = isMobile ? slideHeight * 0.62 : slideHeight * 0.58;
+    let arcBaselineY = isMobile ? slideHeight * 0.52 : slideHeight * 0.50;
 
     function computeSlideTransform(slideIndex, scrollOffset) {
       let wrappedOffsetX =
@@ -75,8 +72,8 @@ export default function ExecutivesSection() {
       const absDist = Math.min(Math.abs(normalizedDist), 1.3);
 
       const scaleFactor = Math.max(
-        1 - absDist * (isMobile ? 0.35 : 0.5),
-        isMobile ? 0.65 : 0.48
+        1 - absDist * (isMobile ? 0.32 : 0.45),
+        isMobile ? 0.68 : 0.52
       );
       const scaledWidth = slideWidth * scaleFactor;
       const scaledHeight = slideHeight * scaleFactor;
@@ -171,15 +168,15 @@ export default function ExecutivesSection() {
       containerWidth = container.clientWidth || window.innerWidth;
       isMobile = containerWidth < 768;
 
-      slideWidth = isMobile ? Math.min(containerWidth * 0.52, 210) : 260;
-      slideHeight = isMobile ? slideWidth * 1.38 : 360;
-      slideGap = isMobile ? slideWidth * 0.58 : 155;
-      arcDepth = isMobile ? 60 : 120;
-      centerLift = isMobile ? 30 : 55;
+      slideWidth = isMobile ? Math.min(containerWidth * 0.54, 215) : 260;
+      slideHeight = isMobile ? slideWidth * 1.55 : 380;
+      slideGap = isMobile ? slideWidth * 0.62 : 160;
+      arcDepth = isMobile ? 50 : 100;
+      centerLift = isMobile ? 25 : 50;
 
       trackWidth = SLIDE_COUNT * slideGap;
       windowCenterX = containerWidth / 2;
-      arcBaselineY = isMobile ? slideHeight * 0.62 : slideHeight * 0.58;
+      arcBaselineY = isMobile ? slideHeight * 0.52 : slideHeight * 0.50;
     };
 
     window.addEventListener('resize', onResize);
@@ -198,13 +195,13 @@ export default function ExecutivesSection() {
 
   const slidePrev = () => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const gap = isMobile ? 110 : 155;
+    const gap = isMobile ? 120 : 160;
     scrollTargetRef.current -= gap;
   };
 
   const slideNext = () => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const gap = isMobile ? 110 : 155;
+    const gap = isMobile ? 120 : 160;
     scrollTargetRef.current += gap;
   };
 
@@ -257,41 +254,37 @@ export default function ExecutivesSection() {
           </div>
         </div>
 
-        {/* 3D Arc Stage with Perpendicular Minimalist Typography */}
+        {/* 3D Arc Stage with Minimalist Text Directly Beneath Photo */}
         <div
           ref={containerRef}
-          className="relative w-full h-[370px] sm:h-[440px] lg:h-[480px] overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative w-full h-[400px] sm:h-[450px] lg:h-[490px] overflow-hidden cursor-grab active:cursor-grabbing"
         >
           {SLIDES.map((exec, idx) => (
             <div
               key={idx}
               ref={(el) => (slidesRef.current[idx] = el)}
-              className="absolute top-0 left-0 rounded-2xl overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.65)] will-change-transform bg-black group"
+              className="absolute top-0 left-0 flex flex-col will-change-transform group"
             >
-              {/* Photo */}
-              <div className="relative w-full h-full">
+              {/* Photo Box */}
+              <div className="relative w-full flex-grow rounded-2xl overflow-hidden shadow-[0_18px_40px_rgba(0,0,0,0.6)] border border-white/20 bg-black">
                 <Image
                   src={exec.image}
                   alt={exec.name}
                   fill
-                  sizes="(max-width: 768px) 210px, 280px"
+                  sizes="(max-width: 768px) 215px, 280px"
                   className="object-cover object-top pointer-events-none"
                   priority={idx < 4}
                 />
+              </div>
 
-                {/* Perpendicular / Vertical Minimalist Name Spine (Left Edge) */}
-                <div className="absolute top-0 left-0 bottom-0 w-8 sm:w-10 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col justify-end p-2 sm:p-3 pointer-events-none z-10">
-                  <div
-                    className="origin-bottom-left -rotate-90 whitespace-nowrap translate-x-4 sm:translate-x-5 text-[11px] sm:text-[13px] font-bold text-white tracking-widest uppercase opacity-90 drop-shadow-md"
-                    style={{ transformOrigin: '0 100%' }}
-                  >
-                    <span className="text-[#05b0f0] mr-2">[{exec.role}]</span>
-                    <span>{exec.name}</span>
-                  </div>
-                </div>
-
-                {/* Subtle bottom gradient to ground the portrait */}
-                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
+              {/* Minimalist Details Directly Beneath the Photo */}
+              <div className="pt-2 sm:pt-2.5 px-1 flex flex-col pointer-events-none">
+                <span className="text-[10px] sm:text-[11px] font-bold text-[#05b0f0] tracking-wider uppercase truncate">
+                  {exec.role}
+                </span>
+                <span className="text-[13px] sm:text-[15px] font-extrabold text-white tracking-tight leading-snug truncate drop-shadow-sm">
+                  {exec.name}
+                </span>
               </div>
             </div>
           ))}
